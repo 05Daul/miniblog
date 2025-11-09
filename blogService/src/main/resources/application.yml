@@ -1,0 +1,19 @@
+spring:
+  application:
+    name:
+      'blogService'
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/miniblog
+    username: daul
+    password: 2364
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    database: postgresql
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 1004
+
