@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Table(name = "users_Entity")
@@ -25,6 +26,9 @@ public class UsersEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long userId;
+
+  @Column(nullable = false,unique = true,length = 13)
+  private String userSignId;
 
   @Column(nullable = false, unique = true,length = 50)
   private String email;
@@ -45,7 +49,7 @@ public class UsersEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  private UserStatus status; //ACTIVE(활성),DEACTIVATED(비활성), SUSPENDED(해지)
+  private UserStatus status = UserStatus.ACTIVE; //ACTIVE(활성),DEACTIVATED(비활성), SUSPENDED(해지)
 
   @Column(nullable = false)
   @CreationTimestamp
@@ -58,5 +62,18 @@ public class UsersEntity {
   @Column(nullable = true)
   private String profile_img;
 
+  public UsersEntity hashPassword(PasswordEncoder passwordEncoder) {
+    this.password = passwordEncoder.encode(this.password);
+    return this;
+  }
 
+  public UsersEntity(String userSignId,String userName, String password,
+      String nickName, String email ,String profile_img) {
+    this.userSignId = userSignId;
+    this.userName = userName;
+    this.profile_img = profile_img;
+    this.password = password;
+    this.nickName = nickName;
+    this.email = email;
+  }
 }
