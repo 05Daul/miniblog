@@ -21,10 +21,9 @@ spring:
 
       routes:
         - id: chatService
-          uri: http://127.0.0.1:1001
+          uri: http://127.0.0.1:1005
           predicates:
             - Path=/chat/**
-            - Method=POST
 
         - id: feedService
           uri: http://127.0.0.1:1001
@@ -37,7 +36,7 @@ spring:
             - Path=/notification/**
 
         - id: userService
-          uri: http://127.0.0.1:1013
+          uri: http://127.0.0.1:1003
           predicates:
             - Path=/user/**
 
@@ -54,3 +53,12 @@ spring:
 
 server:
   port: 1000
+
+jwt:
+  secret: 751afe020ffb9b6f1878cd6d4de2f5ab1b9ff0c17310e118f5aff2e54c31d31b
+  expired : 4320000
+  refresh: 432000000
+
+logging:
+  level:
+    org.springframework.security: DEBUG

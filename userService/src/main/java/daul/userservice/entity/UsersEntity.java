@@ -24,10 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class UsersEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long userId;
-
-  @Column(nullable = false,unique = true,length = 13)
+  @Column(nullable = false,unique = true,length = 16)
   private String userSignId;
 
   @Column(nullable = false, unique = true,length = 50)

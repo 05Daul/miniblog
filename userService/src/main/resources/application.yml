@@ -8,12 +8,26 @@ spring:
     username: daul
     password: 2364
     driver-class-name: org.postgresql.Driver
+
   jpa:
     show-sql: true
     database: postgresql
     hibernate:
       ddl-auto: create
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 server:
   port: 1003
 
+# JWT 설정
+jwt:
+  secret: 751afe020ffb9b6f1878cd6d4de2f5ab1b9ff0c17310e118f5aff2e54c31d31b
+  expired : 4320000
+  refresh: 432000000
+
+logging:
+  level:
+    org.springframework.security: DEBUG
