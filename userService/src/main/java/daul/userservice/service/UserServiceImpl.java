@@ -5,6 +5,7 @@ import daul.userservice.dao.UserDaoImpl;
 import daul.userservice.dto.LoginDTO;
 import daul.userservice.dto.UsersDTO;
 import daul.userservice.entity.UsersEntity;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,22 +45,36 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public String login(LoginDTO loginDTO) {
+  public Map<String, String> login(LoginDTO loginDTO) {
+
+    // 1. 스프링 시큐리티 인증 처리
     Authentication authentication = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
             loginDTO.getUserSignId(),
             loginDTO.getPassword()
         )
     );
-    UsersEntity usersEntity = userDao.findByUserSignId(loginDTO.getUserSignId());
 
+    // 2. DB에서 사용자 정보 조회
+    UsersEntity usersEntity = userDao.findByUserSignId(loginDTO.getUserSignId());
     if (usersEntity == null) {
-      new RuntimeException("사용자가 존재하지 않습니다");
+      throw new RuntimeException("사용자가 존재하지 않습니다.");
     }
 
-    return authService.generateToken(usersEntity.getUserSignId(), usersEntity.getRoleName().toString());
-  }
+    String role = usersEntity.getRoleName().toString();
 
+    // 3. 토큰 생성
+    String accessToken = authService.generateToken(usersEntity.getUserSignId(), role);
+    String refreshToken = authService.generateRefreshToken(usersEntity.getUserSignId());
+
+    // 4. Controller가 header에 넣을 수 있도록 AccessToken 포함 반환
+    return Map.of(
+        "userSignId", usersEntity.getUserSignId(),
+        "role", role,
+        "accessToken", accessToken,
+        "refreshToken", refreshToken
+    );
+  }
   private void DuplicateEmail(UsersDTO usersDTO) {
     if (userDao.findByEmail(usersDTO.getEmail()) != null) {
       throw new RuntimeException("이미 존재하는 이메일입니다.");

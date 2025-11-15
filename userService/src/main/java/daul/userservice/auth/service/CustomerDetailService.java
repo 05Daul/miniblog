@@ -16,6 +16,8 @@ public class CustomerDetailService implements UserDetailsService {
 
   private final UserDaoImpl userDao;
 
+
+  /// AuthenticationManager 이 자동 호출.
   @Override
   public UserDetails loadUserByUsername(String userSignId) throws UsernameNotFoundException {
     try {

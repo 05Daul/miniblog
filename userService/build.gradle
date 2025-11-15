@@ -35,6 +35,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     // redis -> 토큰 캐시 저장 목적
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
