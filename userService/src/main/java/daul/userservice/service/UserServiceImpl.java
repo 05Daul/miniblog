@@ -1,7 +1,7 @@
 package daul.userservice.service;
 
 import daul.userservice.auth.service.AuthService;
-import daul.userservice.dao.UserDaoImpl;
+import daul.userservice.dao.UserDao;
 import daul.userservice.dto.LoginDTO;
 import daul.userservice.dto.UsersDTO;
 import daul.userservice.entity.UsersEntity;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-  private final UserDaoImpl userDao;
+  private final UserDao userDao;
   private final PasswordEncoder bCryptPasswordEncoder;
   private final AuthenticationManager authenticationManager;
   private final AuthService authService;

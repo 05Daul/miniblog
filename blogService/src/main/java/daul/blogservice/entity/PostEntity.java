@@ -2,6 +2,8 @@ package daul.blogservice.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +22,8 @@ public class PostEntity {
   private Long postId;
 
   @Column(name = "author_id", nullable = false)
-  private Long authorId;
+  private String authorId;
+  /// userSignId 랑 같이 사용.
 
   @Column(nullable = false, length = 254)
   private String title;
@@ -44,4 +47,22 @@ public class PostEntity {
   @Column(nullable = true)
   @UpdateTimestamp
   private LocalDateTime updatedAt;
+
+  public void setPost(String authorId, String title,
+      String content, Boolean isPublished, String thumbnail) {
+    this.authorId = authorId;
+    this.title = title;
+    this.content = content;
+    this.isPublished = isPublished;
+    this.thumbnail = thumbnail;
+  }
+
+
+  /// 조회수 처리 -> 동시성 처리 필요
+  public void incrementViewCount() {
+    this.viewCount++;
+  }
+
+
+
 }

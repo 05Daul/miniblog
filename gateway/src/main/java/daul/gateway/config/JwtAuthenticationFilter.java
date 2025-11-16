@@ -51,8 +51,8 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<Config
         String role = jwtUtil.extractRole(token);
 
         ServerHttpRequest modified = request.mutate()
-            .header("X-User-Id", userSignId)
-            .header("X-User-Role", role)
+            .header("userSignId", userSignId)
+            .header("role", role)
             .build();
 
         return chain.filter(exchange.mutate().request(modified).build());
