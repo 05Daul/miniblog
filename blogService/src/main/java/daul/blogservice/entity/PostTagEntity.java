@@ -1,30 +1,17 @@
 package daul.blogservice.entity;
 
 import jakarta.persistence.*;
-import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-/**
- * 해당 엔터티는 posts 테이블과 tags 테이블을 연결하는 post_tags 테이블과 매핑되는 엔티티
- * @Embeddable 으로 복합키 클래스 구현
- * 하단을 보면 "복합 키 객체"를 엔티티에 포함시켜 사용함.
- * @EmbeddedId 필드가 엔티티의 기본 키 역할을 수행하며
- * 필요에 따라 **@AttributeOverrides**를 함께 사용하여 포함된 필드와 DB 컬럼 간의 매핑을 명확하게 지정
- * */
-@Embeddable
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-class PostTagId implements Serializable {
-
-  private Long postId;
-  private Long tagId;
-}
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 @Entity
+@Slf4j
 @Table(name = "post_tags")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostTagEntity {
@@ -36,4 +23,14 @@ public class PostTagEntity {
   })
   private PostTagId postTagId;
 
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @MapsId("postId")
+  @JoinColumn(name = "post_id")
+  private PostEntity post;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @MapsId("tagId")
+  @JoinColumn(name = "tag_id")
+  private TagEntity tag;
 }

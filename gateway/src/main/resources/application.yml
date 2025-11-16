@@ -35,6 +35,11 @@ spring:
           predicates:
             - Path=/notification/**
 
+        - id: blogService
+          uri: http://127.0.0.1:1004
+          predicates:
+            - Path=/blog/**
+
         - id: userService
           uri: http://127.0.0.1:1003
           predicates:
