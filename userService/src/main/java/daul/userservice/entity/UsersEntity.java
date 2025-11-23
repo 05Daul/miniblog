@@ -22,7 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UsersEntity {
-
   @Id
   @Column(nullable = false,unique = true,length = 16)
   private String userSignId;

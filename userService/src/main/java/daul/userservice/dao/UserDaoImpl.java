@@ -30,4 +30,19 @@ public class UserDaoImpl implements UserDao {
   public UsersEntity findByEmail(String email) {
     return null;
   }
+
+  @Override
+  public boolean existsByNickName(String nickName) {
+    return userRepository.existsByNickName(nickName);
+  }
+
+  @Override
+  public boolean existsByUserSignId(String userSignId) {
+    return userRepository.existsByUserSignId(userSignId);
+  }
+
+  @Override
+  public boolean existsByEmail(String email) {
+    return userRepository.existsByEmail(email);
+  }
 }

@@ -1,0 +1,219 @@
+/* commentSection.module.css – 진짜 최종 완벽 버전 (오류 0개, 버튼 100% 꽉 참) */
+
+.commentSection {
+  width: 100%;
+  max-width: 85%;
+  margin: 4rem auto 0;
+  padding-top: 3rem;
+  padding-left: 0 !important;   /* 👈 [추가] 좌우 패딩 강제 제거 */
+  padding-right: 0 !important;
+  border-top: 2px solid #e5e7eb;
+}
+
+.commentTitle,
+.commentForm,
+.commentList {
+  width: 85%;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.commentTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: #111827;
+}
+
+/* ==================== 댓글 작성 폼 ==================== */
+.commentForm {
+  margin-bottom: 3rem;
+}
+
+.commentTextarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 1.2rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  background-color: #fafbfc;
+  font-size: 1rem;
+  line-height: 1.6;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.commentTextarea:focus {
+  outline: none;
+  border-color: #10b981;
+  background-color: #fff;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.commentTextarea::placeholder {
+  color: #94a3b8;
+}
+
+/* 버튼 100% 꽉 차게! 입력창과 정확히 같은 너비 */
+.submitButton {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 1rem 0;
+  background: linear-gradient(to right, #10b981, #059669);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+  transition: all 0.25s;
+}
+
+.submitButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.45);
+}
+
+/* ==================== 댓글 리스트 ==================== */
+.commentList {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.commentItem {
+  --depth: 0;
+  position: relative;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  width: calc(100% - calc(var(--depth) * 3rem));
+  margin-left: calc(var(--depth) * 3rem);
+  margin-top: 1rem;
+  box-sizing: border-box;
+}
+
+.commentItem:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* 대댓글 수직선 & 가로선 */
+.commentItem:not(:first-child)::before {
+  content: '';
+  position: absolute;
+  top: -1.4rem;
+  left: calc(var(--depth) * 3rem - 1.5rem);
+  width: 2px;
+  height: 2rem;
+  background: #cbd5e1;
+}
+
+.commentItem::after {
+  content: '';
+  position: absolute;
+  top: 2.2rem;
+  left: calc(var(--depth) * 3rem - 1.5rem);
+  width: 1.5rem;
+  height: 2px;
+  background: #cbd5e1;
+}
+
+/* depth 0인 댓글은 선 없애기 */
+.commentItem[style*="--depth: 0"]::before,
+.commentItem[style*="--depth: 0"]::after {
+  display: none;
+}
+
+/* 아바타 + 헤더 */
+.commentHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.commentAvatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.commentAuthor { font-weight: 600; color: #1e293b; }
+.commentDate   { color: #64748b; font-size: 0.875rem; }
+.commentContent { margin: 0.8rem 0 1rem; color: #334155; line-height: 1.7; white-space: pre-wrap; }
+
+.commentActions {
+  display: flex;
+  gap: 1.3rem;
+  font-size: 0.9rem;
+  padding-bottom: 5px;
+}
+
+.replyToggle {
+  /* 💡 크기 축소 */
+  font-size: 0.9em; /* 글꼴 크기를 작게 조정 */
+  padding: 2px 8px; /* 내부 패딩을 줄임 */
+
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-align: left;
+  transition: color 0.2s;
+
+  display: block;
+
+}
+
+.replyToggle:hover {
+  text-decoration: underline;
+}
+
+.replyButton,
+.editButton,
+.deleteButton {
+  background: none;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  color: #10b981;
+}
+
+.editButton   { color: #6366f1; }
+.deleteButton { color: #ef4444; }
+
+.replyForm {
+  margin-top: 1rem;
+  padding-left: 3rem;
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+  .commentTitle,
+  .commentForm,
+  .commentList {
+    width: 92%;
+  }
+
+  .commentItem {
+    margin-left: calc(var(--depth) * 2rem);
+    width: calc(100% - calc(var(--depth) * 2rem));
+  }
+
+  .commentItem:not(:first-child)::before,
+  .commentItem::after {
+    left: calc(var(--depth) * 2rem - 1rem);
+  }
+}

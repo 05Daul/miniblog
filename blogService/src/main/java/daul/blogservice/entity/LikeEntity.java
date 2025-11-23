@@ -3,6 +3,7 @@ package daul.blogservice.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -16,6 +17,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class LikeEntity {
 
   @Id
@@ -25,8 +27,8 @@ public class LikeEntity {
   @Column(name = "post_id", nullable = false)
   private Long postId;
 
-  @Column(name = "user_id", nullable = false)
-  private Long userId;
+  @Column(name = "user_sign_id", nullable = false)
+  private String userSignId;
 
   @Column(nullable = false, updatable = false)
   @CreationTimestamp
@@ -35,4 +37,5 @@ public class LikeEntity {
   @Column(nullable = true)
   @UpdateTimestamp
   private LocalDateTime updatedAt;
+
 }

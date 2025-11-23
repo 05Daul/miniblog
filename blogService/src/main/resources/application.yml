@@ -12,6 +12,7 @@ spring:
     show-sql: true
     database: postgresql
     hibernate:
+      #ddl-auto: create
       ddl-auto: update
 
 server:
