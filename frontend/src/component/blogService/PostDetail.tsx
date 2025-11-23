@@ -66,8 +66,7 @@ export default function PostDetail({ post }: { post: PostDetailDTO }) {
     if (window.confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
       setIsDeleting(true);
       try {
-        await deleteFeed(post.postId);
-        alert('게시물이 삭제되었습니다.');
+        await deleteFeed(post.postId, currentUserSignId);        alert('게시물이 삭제되었습니다.');
         router.push('/');
       } catch (error) {
         console.error('삭제 실패:', error);

@@ -38,9 +38,25 @@
   margin-bottom: 8px;
 }
 
+/* ======================================================= */
+/* ✅ [핵심] 제목과 썸네일을 감싸는 그룹 (Flexbox 50:50) */
+/* ======================================================= */
+.titleThumbnailGroup {
+  display: flex;
+  flex-direction: row; /* 가로 배열 */
+  gap: 30px; /* 제목과 썸네일 사이 간격 */
+}
+
+/* 제목 입력 필드를 감싸는 Wrapper (50% 비율) */
+.titleInputWrapper {
+  /* gap 30px 중 절반(15px)을 제외한 50% */
+  flex-basis: calc(50% - 15px);
+  flex-shrink: 0;
+}
+
 /* 제목 입력 */
 .titleInput {
-  width: 100%;
+  width: 99.5%;
   padding: 16px;
   font-size: 24px;
   font-weight: 600;
@@ -59,6 +75,7 @@
   color: #d1d5db;
   font-weight: 400;
 }
+/* ======================================================= */
 
 /* 일반 텍스트 입력 */
 .textInput {
@@ -133,10 +150,123 @@
   transform: none;
 }
 
-/* 반응형 - 태블릿 이하 */
+/* ======================================================= */
+/* 썸네일 관련 스타일 (50% 너비, 높이 120px) */
+/* ======================================================= */
+
+.thumbnailSection {
+  /* gap 30px 중 절반(15px)을 제외한 50% */
+  flex-basis: calc(50% - 15px);
+  flex-shrink: 0;
+
+  /* 기존 스타일 유지 */
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 0;
+}
+
+.thumbnailSection h3 {
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: #374151;
+}
+
+.thumbnailWrapper {
+  min-height: 120px;
+  background-color: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* 업로드 중일 때 커서 변경 */
+.thumbnailWrapper[disabled] {
+  cursor: not-allowed;
+}
+
+.thumbnailPreview {
+  max-width: 100%;
+  max-height: 120px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* 썸네일 제거 버튼 */
+.removeThumbnailBtn {
+  margin-top: 10px;
+  padding: 5px 10px;
+  border: 1px solid #dc3545;
+  background-color: #fff;
+  color: #dc3545;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.removeThumbnailBtn:hover {
+  background-color: #ffeaea;
+}
+
+/* ======================================================= */
+/* 태그 입력 그룹 스타일 */
+.tagInputGroup {
+  margin-bottom: 0;
+}
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.tagItem {
+  background: #e5e7eb;
+  color: #4b5563;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+}
+.removeTagBtn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  margin-left: 4px;
+  color: #4b5563;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 0 2px;
+}
+
+
+/* ======================================================= */
+/* 반응형 - 태블릿 이하 (1024px 이하에서는 1열로 변경) */
+/* ======================================================= */
 @media (max-width: 1024px) {
+  /* 제목 + 썸네일 그룹을 수직(column)으로 변경 */
+  .titleThumbnailGroup {
+    flex-direction: column;
+    gap: 20px;
+  }
+
   .writePageContainer {
     padding: 15px;
+  }
+
+  /* ✅ 수정: 1024px 이하에서는 100% 너비로 재설정 */
+  .titleInputWrapper {
+    flex-basis: auto;
+    width: 100%;
+  }
+  .thumbnailSection {
+    flex-basis: auto;
+    width: 100%;
   }
 
   .titleInput {
@@ -144,7 +274,6 @@
   }
 }
 
-/* 반응형 - 모바일 */
 @media (max-width: 768px) {
   .writePageContainer {
     padding: 12px;

@@ -37,7 +37,7 @@ public class SecurityConfig {
         // 1. http요청에 권한부여 시작
         .authorizeHttpRequests(authorize -> authorize
             //2. 권한을 설정할 특정 URL을 .requestMatchers()로 설정
-            .requestMatchers("/user/signup","/user/login").permitAll()
+            .requestMatchers("/user/signup","/user/login","/blog/images/**").permitAll()
             //3 .authenticated()로 인증 정보 설정
             .anyRequest().authenticated()
         );

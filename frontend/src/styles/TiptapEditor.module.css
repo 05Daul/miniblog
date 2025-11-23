@@ -205,14 +205,20 @@
 
 /* 반응형 */
 @media (max-width: 768px) {
-  .editorWrapper {
-    flex-direction: column;
-    height: auto;
+  .previewPane {
+    display: none;
   }
 
-  .previewPane {
-    border-left: none;
-    border-top: 1px solid #e5e7eb;
-    max-height: 300px;
+  /* 2. 작성 영역을 전체 너비로 확장 */
+  .editorPane {
+    /* flex: 1; 이지만, 미리보기가 사라지면서 자동으로 전체 공간(100%)을 차지하게 됩니다. */
+    /* 명시적으로 flex-basis를 설정하면 더 안전합니다. */
+    flex-basis: 100%;
+    min-width: 100%;
+  }
+
+  /* 3. 에디터 래퍼의 gap을 0으로 설정 */
+  .editorWrapper {
+    gap: 0;
   }
 }
