@@ -1,0 +1,243 @@
+/* postDetail.module.css – 진짜 진짜 최종 완벽 버전 (2025.11.23) */
+
+.detailContainer {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  background-color: #ffffff;
+}
+
+/* ================================================================= */
+/* 1. 수직선 완벽 정렬 – 제목, 본문, 댓글 모두 정확히 같은 85% 영역  */
+/* ================================================================= */
+.postHeader,
+.mainContent,
+.centralContent > article,
+.centralContent > section,
+.centralContent > div > section {
+
+  width: 85% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* 본문 내부 모든 요소 강제로 100% 채우기 (넘침 완전 방지) */
+.mainContent :global(*) {
+  max-width: none !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* 본문 ↔ 댓글 사이 여백 줄이기 */
+.centralContent > article {
+  margin-bottom: 2rem !important;
+}
+
+/* 썸네일도 수직선 맞춤 */
+.postThumbnail {
+  width: 85% !important;
+  max-width: 900px !important;
+  margin: 4rem auto !important;
+  display: block !important;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* 제목만 스티키 공간 80px만큼 오른쪽으로 밀기 */
+.postHeader {
+  padding-left: 80px !important;
+  box-sizing: border-box !important;
+}
+
+/* 모바일에선 제목 밀기 취소 */
+@media (max-width: 1200px) {
+  .postHeader {
+    padding-left: 0 !important;
+  }
+}
+
+/* ================================================================= */
+/* 2. Grid Layout & 사이드바                                          */
+/* ================================================================= */
+.gridWrapper {
+  display: grid;
+  grid-template-columns: 80px 1fr 200px;
+  gap: 2rem;
+  margin-top: 3rem;
+  min-height: 100vh;
+}
+
+.centralContent {
+  grid-column: 2 / 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;               /* 자식들 가운데로 */
+}
+
+.leftSidebar,
+.sidebar {
+  align-self: stretch;
+  min-height: 100vh;
+}
+
+.leftSidebar .stickyBox,
+.sidebar .stickyBox {
+  position: sticky;
+  top: 5rem;
+}
+
+/* ================================================================= */
+/* 3. 헤더, 제목, 메타 등                                           */
+/* ================================================================= */
+.postHeader {
+  position: relative;
+  padding-bottom: 2rem;
+}
+
+.metaRow{
+  display: flex; /* Flexbox 활성화 */
+  justify-content: flex-end; /* 내용을 오른쪽 끝으로 정렬 */
+  margin-bottom: 1.5rem; /* 제목과 본문 사이의 간격 */
+  margin-top: 1rem; /* 제목과의 간격 */
+  font-size: 0.95rem;
+  color: #6b7280;
+  gap: 15px;
+}
+
+.postTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  color: #111827;
+}
+
+.metaRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+/* ================================================================= */
+/* 4. 본문 스타일                                                    */
+/* ================================================================= */
+.mainContent {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: #374151;
+}
+
+/* ================================================================= */
+/* 5. 좋아요, 공유, 수정/삭제 버튼 (100% 그대로!)                    */
+/* ================================================================= */
+.reactionContainer { display: flex; flex-direction: column; gap: 8px; align-items: center; background: transparent; border: none; padding: 0; }
+.likeButton, .shareButton { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 1.5px solid #e5e7eb; cursor: pointer; transition: all 0.2s; }
+.likeButton:hover:not(:disabled) { border-color: #ef4444; transform: scale(1.08); }
+.shareButton:hover { border-color: #6366f1; transform: scale(1.08); }
+.activeLike { background-color: #fef2f2 !important; border-color: #ef4444 !important; color: #ef4444 !important; }
+
+.authorActions {
+  display: flex;
+  gap: 12px;
+}
+
+.editButton,
+.deleteButton {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.editButton:hover,
+.deleteButton:hover {
+  color: #111827;
+}
+
+/* ================================================================= */
+/* 6. 태그 & 목차 등 나머지 스타일 (필요한 부분만)                   */
+/* ================================================================= */
+.tagsContainer { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.tag { /* 기존 그대로 */ }
+
+/* ================================================================= */
+/* 7. 반응형 (모바일에서도 수직선 유지)                               */
+/* ================================================================= */
+@media (max-width: 1200px) {
+  .gridWrapper { grid-template-columns: 1fr 200px; }
+  .leftSidebar { display: none; }
+  .centralContent { grid-column: 1 / 2; }
+}
+
+@media (max-width: 768px) {
+  .detailContainer { padding: 2rem 1rem; }
+  .gridWrapper { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .centralContent { grid-column: 1 / 2; }
+
+  .postHeader,
+  .mainContent,
+  .centralContent > article,
+  .centralContent > section {
+    width: 92% !important;
+    max-width: none !important;
+  }
+
+  .postThumbnail {
+    width: 92% !important;
+  }
+}
+.tocNav {
+  padding: 15px;
+  border-left: 3px solid #e5e7eb; /* 좌측에 회색 라인으로 구분 */
+  /* background-color: #f9fafb; */ /* 필요하다면 연한 배경색 */
+}
+
+.tocTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  /* 💡 요청: 글자를 연한 회색으로 변경 (#6b7280) */
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.tocList {
+  list-style: none; /* 리스트 기본 마커 제거 */
+  padding: 0;
+  margin: 0;
+}
+
+.tocLink {
+  display: block;
+  padding: 5px 0;
+  font-size: 0.95rem;
+  color: #4b5563; /* 본문 텍스트보다 살짝 연한 회색 */
+  transition: all 0.2s;
+
+  /* 💡 요청: 밑줄 표시 없애기 */
+  text-decoration: none;
+}
+
+.tocLink:hover {
+  color: #111827; /* 호버 시 진한 색상 */
+  text-decoration: underline; /* 호버 시 밑줄 표시 */
+}
+
+/* 레벨별 들여쓰기 */
+.tocLevel2 {
+  padding-left: 15px;
+}
+
+.tocLevel3 {
+  padding-left: 30px;
+}

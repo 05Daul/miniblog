@@ -1,0 +1,218 @@
+/* TiptapEditor.module.css */
+
+.editorWrapper {
+  display: flex;
+  gap: 2rem;
+  height: 600px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.editorPane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+
+.menuBar {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  flex-wrap: wrap;
+}
+
+.menuBar button {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.menuBar button:hover {
+  background-color: #f3f4f6;
+}
+
+.menuBar button.isActive {
+  background-color: #6366f1;
+  color: #ffffff;
+  border-color: #6366f1;
+}
+
+.editorContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+/* ✅ ProseMirror 에디터 영역에 white-space 설정 추가 */
+.editorContent :global(.ProseMirror) {
+  min-height: 100%;
+  outline: none;
+  white-space: pre-wrap; /* 공백과 줄바꿈 보존 */
+  word-wrap: break-word;
+}
+
+.editorContent :global(.ProseMirror) p {
+  margin: 0.5rem 0;
+  white-space: pre-wrap; /* 문단 내 공백 보존 */
+  min-height: 1.5em; /* ✅ 빈 문단도 높이 확보 */
+  line-height: 1.5; /* ✅ 줄 높이 명시 - 미리보기와 동일 */
+}
+
+/* ✅ 빈 문단에 최소 높이 부여 */
+.editorContent :global(.ProseMirror) p:empty::before {
+  content: '';
+  display: block;
+  min-height: 1.5em;
+}
+
+.editorContent :global(.ProseMirror) h1,
+.editorContent :global(.ProseMirror) h2,
+.editorContent :global(.ProseMirror) h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.editorContent :global(.ProseMirror) h1 {
+  font-size: 2rem;
+}
+
+.editorContent :global(.ProseMirror) h2 {
+  font-size: 1.5rem;
+}
+
+.editorContent :global(.ProseMirror) ul,
+.editorContent :global(.ProseMirror) ol {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.editorContent :global(.ProseMirror) code {
+  background-color: #f3f4f6;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+}
+
+.editorContent :global(.ProseMirror) pre {
+  background-color: #1f2937;
+  color: #f9fafb;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+  white-space: pre; /* 코드 블록은 pre 유지 */
+}
+
+.editorContent :global(.ProseMirror) pre code {
+  background-color: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+.previewPane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9fafb;
+  border-left: 1px solid #e5e7eb;
+  overflow-y: auto;
+}
+
+.previewTitle {
+  padding: 1rem;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #ffffff;
+}
+
+.previewContent {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  white-space: pre-wrap; /* 미리보기도 공백 보존 */
+  word-wrap: break-word;
+}
+
+.previewContent p {
+  margin: 0.5rem 0;
+  white-space: pre-wrap;
+  min-height: 1.5em; /* ✅ 빈 문단도 높이 확보 */
+  line-height: 1.5; /* ✅ 줄 높이 명시 */
+}
+
+/* ✅ 빈 문단 또는 &nbsp;만 있는 문단 처리 */
+.previewContent p:empty,
+.previewContent p:empty::before {
+  content: '';
+  display: block;
+  min-height: 1.5em;
+}
+
+.previewContent h1,
+.previewContent h2,
+.previewContent h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.previewContent h1 {
+  font-size: 2rem;
+}
+
+.previewContent h2 {
+  font-size: 1.5rem;
+}
+
+.previewContent ul,
+.previewContent ol {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.previewContent code {
+  background-color: #f3f4f6;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+}
+
+.previewContent pre {
+  background-color: #1f2937;
+  color: #f9fafb;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.previewContent pre code {
+  background-color: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .editorWrapper {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .previewPane {
+    border-left: none;
+    border-top: 1px solid #e5e7eb;
+    max-height: 300px;
+  }
+}

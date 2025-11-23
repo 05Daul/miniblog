@@ -1,9 +1,16 @@
 package daul.blogservice.service;
 
+import daul.blogservice.dto.CommentDTO;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import org.springframework.cglib.core.Local;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import daul.blogservice.dao.PostDao;
 import daul.blogservice.dao.PostTagDao;
 import daul.blogservice.dao.TagDao;
 import daul.blogservice.dto.PostCreationRequestDTO;
+import daul.blogservice.entity.CommentEntity;
 import daul.blogservice.entity.PostEntity;
 import daul.blogservice.entity.PostTagEntity;
 import daul.blogservice.entity.PostTagId;
@@ -22,6 +29,7 @@ public class PostServiceImpl implements PostService {
   private final PostDao postDao;
   private final TagDao tagDao;
 
+  // 게시물 삭제
   @Transactional
   @Override
   public void deletePost(Long postId) {
@@ -33,6 +41,37 @@ public class PostServiceImpl implements PostService {
 
     // 게시글 삭제
     postDao.deletePost(postId);
+  }
+
+  @Override
+  @Transactional
+  public PostEntity updatePost(String authenticatedUserSignId,Long postId, PostCreationRequestDTO postCreationRequestDTO) {
+    PostEntity post = postDao.findById(postId)
+        .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id=" + postId));
+
+    post.setTitle(postCreationRequestDTO.getTitle());
+    post.setContent(postCreationRequestDTO.getContent());
+    if (postCreationRequestDTO.getThumbnail() != null) {
+      post.setThumbnail(postCreationRequestDTO.getThumbnail());
+    }
+
+    List<String> newTags = postCreationRequestDTO.getTags();
+    if (newTags != null) {
+      postTagDao.deleteByPostId(postId);
+
+      if (!newTags.isEmpty()) {
+        addTagsToPost(postId, newTags);
+      }
+    }
+    return postDao.writePost(post);
+  }
+
+  @Transactional
+
+  @Override
+  public PostEntity readPost(Long postId) {
+    return postDao.findById(postId)
+        .orElseThrow(() -> new RuntimeException("게시물이 존재하지 않습니다."));
   }
 
   @Override
@@ -131,7 +170,68 @@ public class PostServiceImpl implements PostService {
   @Transactional
   @Override
   public void incrementViewCount(Long postId) {
-    // 쿼리가 DB에서 직접 실행되므로 트랜잭션이 필요
     postDao.incrementViewCount(postId);
+  }
+
+
+  /* @Transactional(readOnly = true)
+   @Override
+   public Page<PostEntity> getFeedPosts(String currentUserId, Pageable pageable) {
+    *//* List<String> followedAuthorIds = followService.getFollowedUserIds(currentUserId);
+
+    if (followedAuthorIds.isEmpty()) {
+      return Page.empty(pageable);
+   *//* }
+
+    return postDao.findFeedPostsByAuthorIds(followedAuthorIds, pageable);
+  }
+*/
+  @Transactional(readOnly = true)
+  @Override
+  public Page<PostEntity> getRecentPosts(Pageable pageable) {
+    return postDao.getRecentPosts(pageable);
+  }
+
+  @Transactional(readOnly = true)
+  @Override
+  public Page<PostEntity> getTrendingPosts(Pageable pageable) {
+    LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
+    return postDao.findTrendingPosts(sevenDaysAgo,pageable);
+  }
+
+  private CommentDTO convertToDTOWithChildren(CommentEntity entity) {
+    List<CommentDTO> children = entity.getChildComments().stream()
+        .map(this::convertToDTO)
+        .collect(Collectors.toList());
+
+    return CommentDTO.builder()
+        .commentId(entity.getCommentId())
+        .postId(entity.getPostId())
+        .userId(entity.getUserId())
+        .parentId(
+            entity.getParentComment() != null ? entity.getParentComment().getCommentId() : null)
+        .content(entity.getContent())
+        .isDeleted(entity.getIsDeleted())
+        .createdAt(entity.getCreatedAt())
+        .updatedAt(entity.getUpdatedAt())
+        .childComments(children)
+        .childCount(children.size())
+        .build();
+  }
+
+  // Entity -> DTO 변환 (단순)
+  private CommentDTO convertToDTO(CommentEntity entity) {
+    return CommentDTO.builder()
+        .commentId(entity.getCommentId())
+        .postId(entity.getPostId())
+        .userId(entity.getUserId())
+        .parentId(
+            entity.getParentComment() != null ? entity.getParentComment().getCommentId() : null)
+        .content(entity.getContent())
+        .isDeleted(entity.getIsDeleted())
+        .createdAt(entity.getCreatedAt())
+        .updatedAt(entity.getUpdatedAt())
+        .childCount(0)
+        .build();
   }
 }
