@@ -205,14 +205,116 @@
 
 /* 반응형 */
 @media (max-width: 768px) {
-  .editorWrapper {
-    flex-direction: column;
-    height: auto;
+  .previewPane {
+    display: none;
   }
 
-  .previewPane {
-    border-left: none;
-    border-top: 1px solid #e5e7eb;
-    max-height: 300px;
+  /* 2. 작성 영역을 전체 너비로 확장 */
+  .editorPane {
+    /* flex: 1; 이지만, 미리보기가 사라지면서 자동으로 전체 공간(100%)을 차지하게 됩니다. */
+    /* 명시적으로 flex-basis를 설정하면 더 안전합니다. */
+    flex-basis: 100%;
+    min-width: 100%;
   }
+
+  /* 3. 에디터 래퍼의 gap을 0으로 설정 */
+  .editorWrapper {
+    gap: 0;
+  }
+}
+/* 이미지 모달 */
+.imageResizeModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.resizeControl {
+  margin: 1.5rem 0;
+}
+
+.resizeControl input[type="range"] {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: #ddd;
+  outline: none;
+}
+
+.resizeControl input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.modalButtons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.applyBtn, .cancelBtn {
+  flex: 1;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.applyBtn { background: #4CAF50; color: white; }
+.cancelBtn { background: #f44336; color: white;color: white; }
+
+.previewContent img {
+  display: block;
+  height: auto;
+}
+
+/* TiptapEditor.module.css 파일 하단에 추가 */
+
+.alignControl {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.alignButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.alignButtons button {
+  flex: 1;
+  padding: 0.6rem;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.alignButtons button:hover {
+  background-color: #f3f4f6;
+}
+
+.alignActive {
+  background-color: #6366f1 !important;
+  color: #ffffff !important;
+  border-color: #6366f1 !important;
 }

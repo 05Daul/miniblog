@@ -5,7 +5,10 @@ import daul.blogservice.dto.PostResDTO;
 import daul.blogservice.entity.PostEntity;
 import daul.blogservice.service.PostService;
 import jakarta.transaction.Transactional;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/blog")
@@ -30,6 +34,24 @@ public class BlogController {
 
   private final PostService postService;
 
+  @PostMapping("/upload")
+  public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
+    if (file.isEmpty()) {
+      return ResponseEntity.badRequest().body(Map.of("message", "파일이 존재하지 않습니다."));
+    }
+
+    try {
+      String imageUrl = postService.uploadImage(file);
+
+      Map<String, String> response = new HashMap<>();
+      response.put("url", imageUrl);
+
+      return ResponseEntity.ok(response);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return ResponseEntity.internalServerError().body(Map.of("message", "파일 업로드에 실패했습니다."));
+    }
+  }
 
   // 게시물 작성
   @PostMapping("/write")
@@ -64,8 +86,8 @@ public class BlogController {
   }
 
 
-  @GetMapping("/readpost")
-  public ResponseEntity<PostEntity> getPosts(@RequestParam Long postId) {
+  @GetMapping("/{postId}")
+  public ResponseEntity<PostEntity> getPosts(@PathVariable Long postId) {
     PostEntity post = postService.readPost(postId);
     if (post != null) {
       return ResponseEntity.ok(post);

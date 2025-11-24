@@ -1,5 +1,15 @@
 /* postDetail.module.css – 진짜 진짜 최종 완벽 버전 (2025.11.23) */
 
+.mainContent img {
+  /* Tiptap이 설정한 인라인 스타일(width: Npx)이 적용되도록 환경 설정 */
+  max-width: 100%;
+  height: auto;
+  display: block; /* 이미지 정렬과 간격 처리를 위해 블록 요소로 */
+  margin: 1rem auto; /* 상하 간격 추가 및 중앙 정렬 */
+
+  width: auto;
+}
+
 .detailContainer {
   max-width: 1400px;
   margin: 0 auto;
@@ -24,14 +34,11 @@
 }
 
 /* 본문 내부 모든 요소 강제로 100% 채우기 (넘침 완전 방지) */
-.mainContent :global(*) {
+.mainContent :global(*:not(img)) {
   max-width: none !important;
   width: 100% !important;
   margin-left: 0 !important;
   margin-right: 0 !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  box-sizing: border-box !important;
 }
 
 /* 본문 ↔ 댓글 사이 여백 줄이기 */

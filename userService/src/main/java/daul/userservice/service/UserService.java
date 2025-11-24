@@ -11,5 +11,9 @@ public interface UserService {
   Map<String, String> login(LoginDTO loginDTO);
   FriendsResDto requestFriend(String requesterSignId, FriendReqDto dto);
   FriendsResDto acceptFriend(String receiverSignId, String requesterSignId);
+  boolean existsByUserSignId(String userSignId);
+  boolean existsByNickName(String email);
+  boolean existsByEmail(String email);
+
 
 }

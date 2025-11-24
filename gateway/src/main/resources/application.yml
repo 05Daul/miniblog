@@ -38,7 +38,16 @@ spring:
         - id: blogService
           uri: http://127.0.0.1:1004
           predicates:
+            - Path=/blog/images/**
+          filters:
+            - StripPrefix=1
+
+
+        - id: blogService
+          uri: http://127.0.0.1:1004
+          predicates:
             - Path=/blog/**
+
 
         - id: userService
           uri: http://127.0.0.1:1003

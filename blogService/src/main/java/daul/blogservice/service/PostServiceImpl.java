@@ -1,9 +1,14 @@
 package daul.blogservice.service;
 
 import daul.blogservice.dto.CommentDTO;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.Optional;
-import org.springframework.cglib.core.Local;
+import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import daul.blogservice.dao.PostDao;
@@ -20,14 +25,21 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PostServiceImpl implements PostService {
 
   private final PostTagDao postTagDao;
   private final PostDao postDao;
   private final TagDao tagDao;
+
+  @Value("${file.upload-dir}")
+  private  String uploadDir;
+  @Value("${file.base-url}")
+  private String baseUrl;
 
   // 게시물 삭제
   @Transactional
@@ -199,6 +211,39 @@ public class PostServiceImpl implements PostService {
     return postDao.findTrendingPosts(sevenDaysAgo,pageable);
   }
 
+
+  @Override
+  public String uploadImage(MultipartFile file) throws IOException {
+    // 1. 디렉토리 생성 (없으면)
+    Path uploadPath = Paths.get(uploadDir);
+    if (!Files.exists(uploadPath)) {
+      try {
+        Files.createDirectories(uploadPath); // 디렉토리가 없으면 생성
+        log.info("이미지 업로드 디렉토리 생성: {}", uploadPath.toAbsolutePath());
+      } catch (IOException e) {
+        log.error("이미지 업로드 디렉토리 생성 실패: {}", uploadPath.toAbsolutePath(), e);
+        throw new IOException("파일 저장 경로를 생성할 수 없습니다.", e);
+      }
+    }
+    // 2. 파일 이름 생성 (중복 방지를 위해 UUID 사용)
+    String originalFilename = file.getOriginalFilename();
+    String extension = "";
+    if (originalFilename != null && originalFilename.contains(".")) {
+      extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+    }
+    String fileName = UUID.randomUUID().toString() + extension;
+    Path filePath = uploadPath.resolve(fileName);
+
+    // 3. 파일 저장
+    file.transferTo(filePath.toFile());
+    log.info("파일 저장 성공: {}", filePath.toAbsolutePath());
+    String cleanBaseUrl = baseUrl;
+    if (baseUrl.endsWith("/")) {
+      cleanBaseUrl = baseUrl.substring(0, baseUrl.length() - 1);
+    }
+    // 4. URL 반환
+    return cleanBaseUrl + "/" + fileName;
+  }
   private CommentDTO convertToDTOWithChildren(CommentEntity entity) {
     List<CommentDTO> children = entity.getChildComments().stream()
         .map(this::convertToDTO)

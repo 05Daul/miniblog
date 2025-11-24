@@ -32,6 +32,21 @@ public class UserServiceImpl implements UserService {
   private final FriendsDao friendDao;
 
   @Override
+  public boolean existsByEmail(String email) {
+    return userDao.existsByEmail(email);
+  }
+
+  @Override
+  public boolean existsByUserSignId(String userSignId) {
+    return userDao.existsByUserSignId(userSignId);
+  }
+
+  @Override
+  public boolean existsByNickName(String email) {
+    return userDao.existsByNickName(email);
+  }
+
+  @Override
   public void signUp(UsersDTO usersDTO) {
     log.info("user Service on signup");
     log.info(usersDTO.toString());

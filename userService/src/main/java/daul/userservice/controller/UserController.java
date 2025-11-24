@@ -1,5 +1,7 @@
 package daul.userservice.controller;
 
+import static org.springframework.http.ResponseEntity.ok;
+
 import daul.userservice.dto.FriendReqDto;
 import daul.userservice.dto.FriendsResDto;
 import daul.userservice.dto.LoginDTO;
@@ -12,12 +14,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -29,6 +33,24 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class UserController {
 
   private final UserServiceImpl userService;
+
+  @GetMapping("/existId")
+  public ResponseEntity<String> existUserId(@RequestParam("userId") String userId) {
+    boolean exists = userService.existsByUserSignId(userId);
+    return ResponseEntity.ok(exists ? "exists" : "not exists");
+  }
+
+  @GetMapping("/existEmail")
+  public ResponseEntity<String> existEmail(@RequestParam("email") String email) {
+    boolean exists = userService.existsByEmail(email);
+    return ResponseEntity.ok(exists ? "exists" : "not exists");
+  }
+
+  @GetMapping("/existNickname")
+  public ResponseEntity<String> existNickname(@RequestParam("nickname") String nickname) {
+    boolean exists = userService.existsByNickName(nickname);
+    return ResponseEntity.ok(exists ? "exists" : "not exists");
+  }
 
   @PostMapping("/signup")
   public ResponseEntity<String> signup(@Valid @RequestBody UsersDTO usersDTO) {
@@ -45,6 +67,7 @@ public class UserController {
           .body("회원가입 중 문제가 발생했습니다.");
     }
   }
+
   @PostMapping("/login")
   public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginDTO loginDTO) {
 
@@ -53,7 +76,7 @@ public class UserController {
     HttpHeaders headers = new HttpHeaders();
     headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + result.get("accessToken"));
 
-    return ResponseEntity.ok()
+    return ok()
         .headers(headers)
         .body(Map.of(
             "userSignId", result.get("userSignId"),
@@ -99,7 +122,7 @@ public class UserController {
     try {
       FriendsResDto responseDto = userService.acceptFriend(receiverSignId, requesterSignId);
       // 상태 변경 성공 시 HTTP 200 OK 반환
-      return ResponseEntity.ok(responseDto);
+      return ok(responseDto);
     } catch (Exception e) {
       return handleFriendshipException(e);
     }
@@ -115,7 +138,8 @@ public class UserController {
       if (message.contains("자기 자신")) {
         // 자기 자신에게 요청한 경우 400 Bad Request
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-      } else if (message.contains("이미 친구") || message.contains("이미 요청") || message.contains("PENDING 상태가 아닙니다")) {
+      } else if (message.contains("이미 친구") || message.contains("이미 요청") || message.contains(
+          "PENDING 상태가 아닙니다")) {
         // 이미 친구 관계이거나, 상태가 유효하지 않은 경우 409 Conflict
         return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
       }

@@ -3,9 +3,11 @@ package daul.blogservice.service;
 
 import daul.blogservice.dto.PostCreationRequestDTO;
 import daul.blogservice.entity.PostEntity;
+import java.io.IOException;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 
 public interface PostService {
@@ -51,4 +53,6 @@ public interface PostService {
 /*
   Page<PostEntity> getFeedPosts(String currentUserId, Pageable pageable);
 */
+
+  String uploadImage(MultipartFile file) throws IOException;
 }
