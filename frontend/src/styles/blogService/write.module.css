@@ -61,10 +61,10 @@
   font-size: 24px;
   font-weight: 600;
   border: none;
-  border-bottom: 2px solid #e5e7eb;
   outline: none;
   transition: border-color 0.3s;
   background: transparent;
+
 }
 
 .titleInput:focus {
@@ -288,3 +288,7 @@
     gap: 20px;
   }
 }
+
+
+
+

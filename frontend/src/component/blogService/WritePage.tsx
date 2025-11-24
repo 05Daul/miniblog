@@ -9,7 +9,13 @@ import React, {
 } from 'react';
 import { useRouter } from 'next/router';
 import TiptapEditor from '../../component/TiptapEditor';
-import { writeFeed, readPost, updatePost, uploadImage } from '../../api/blogService/blog';
+import {
+  writeFeed,
+  readPost,
+  updatePost,
+  uploadImage,
+  getPostTags
+} from '../../api/blogService/blog';
 import { PostCreationRequestDTO, PostEntity } from '../../types/blogService/blogType';
 import styles from '../../styles/blogService/write.module.css';
 
@@ -20,13 +26,11 @@ interface WritePageProps {
 
 const WritePage: React.FC<WritePageProps> = ({ postId }) => {
   const router = useRouter();
-
+  const [isComposing, setIsComposing] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
-
-  // 썸네일 전용 상태 및 업로드 관련 상태/Ref
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
@@ -52,13 +56,17 @@ const WritePage: React.FC<WritePageProps> = ({ postId }) => {
         try {
           setIsLoading(true);
           const data = await readPost(postId);
+
           setTitle(data.title);
           setContent(data.content);
-          setTags(data.tags || []);
+          const loadedTags = await getPostTags(postId);
+          setTags(loadedTags);
+          console.log(loadedTags)
           setThumbnailUrl(data.thumbnail || null);
           setIsPublished(data.isPublished);
         } catch (error) {
           console.error("데이터 로드 실패:", error);
+          // ⚠️ alert 대신 사용자 정의 모달 또는 인라인 메시지 사용 권장
           alert("게시글 정보를 불러오는데 실패했습니다.");
           router.back();
         } finally {
@@ -73,13 +81,22 @@ const WritePage: React.FC<WritePageProps> = ({ postId }) => {
 
   // 3. 태그 관리 로직
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && tagInput.trim()) {
+    // ⚠️ [핵심 수정] 한글 조합(Composition) 중이라면 Enter, Spacebar 처리 스킵
+    // '가나다라' 입력 후 ' ' (공백) 입력 시 '라'가 분리되는 버그 방지
+    if (isComposing) {
+      return;
+    }
+
+    // Enter 또는 Spacebar를 눌렀을 때
+    if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       const newTag = tagInput.trim();
-      if (!tags.includes(newTag)) {
+
+      // 태그가 실제로 입력되었고, 기존 태그 목록에 포함되어 있지 않을 때만 추가
+      if (newTag.length > 0 && !tags.includes(newTag)) {
         setTags([...tags, newTag]);
       }
-      setTagInput('');
+      setTagInput(''); // 입력 필드 초기화
     }
   };
 
@@ -98,9 +115,11 @@ const WritePage: React.FC<WritePageProps> = ({ postId }) => {
       const result = await uploadImage(file);
       const url = (result as any).url;
       setThumbnailUrl(url);
+      // ⚠️ alert 대신 사용자 정의 모달 또는 인라인 메시지 사용 권장
       alert('썸네일 업로드 완료');
     } catch (error) {
       console.error('썸네일 업로드 실패:', error);
+      // ⚠️ alert 대신 사용자 정의 모달 또는 인라인 메시지 사용 권장
       alert('썸네일 업로드에 실패했습니다. (콘솔 확인)');
       setThumbnailUrl(null);
     } finally {
@@ -116,11 +135,13 @@ const WritePage: React.FC<WritePageProps> = ({ postId }) => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) {
+      // ⚠️ alert 대신 사용자 정의 모달 또는 인라인 메시지 사용 권장
       alert("제목과 내용을 입력해주세요.");
       return;
     }
 
     if (!userSignId) {
+      // ⚠️ alert 대신 사용자 정의 모달 또는 인라인 메시지 사용 권장
       alert("로그인 정보가 없습니다. 다시 로그인해주세요.");
       router.push('/login');
       return;
@@ -141,6 +162,7 @@ const WritePage: React.FC<WritePageProps> = ({ postId }) => {
 
       if (postId) {
         resultPost = await updatePost(postId, postData, userSignId);
+        // ⚠️ alert 대신 사용자 정의 모달 또는 인라인 메시지 사용 권장
         alert("게시글이 성공적으로 수정되었습니다.");
         router.push(`/post/${postId}`);
 
@@ -148,9 +170,11 @@ const WritePage: React.FC<WritePageProps> = ({ postId }) => {
         resultPost = await writeFeed(postData, userSignId);
 
         if (resultPost.postId) {
+          // ⚠️ alert 대신 사용자 정의 모달 또는 인라인 메시지 사용 권장
           alert("글이 성공적으로 등록되었습니다!");
           router.push(`/post/${resultPost.postId}`);
         } else {
+          // ⚠️ alert 대신 사용자 정의 모달 또는 인라인 메시지 사용 권장
           alert("글이 등록되었으나 ID를 받지 못했습니다. 홈으로 이동합니다.");
           router.push('/');
         }
@@ -158,6 +182,7 @@ const WritePage: React.FC<WritePageProps> = ({ postId }) => {
 
     } catch (error) {
       console.error("작업 중 오류 발생:", error);
+      // ⚠️ alert 대신 사용자 정의 모달 또는 인라인 메시지 사용 권장
       alert("작업 중 오류가 발생했습니다. 자세한 내용은 콘솔을 확인해주세요.");
     } finally {
       setIsLoading(false);
@@ -175,9 +200,7 @@ const WritePage: React.FC<WritePageProps> = ({ postId }) => {
 
   return (
       <div className={styles.writePageContainer}>
-        <div className={styles.writeHeader}>
-          <h1 className={styles.writeTitle}>{postId ? "게시글 수정" : "순간과 순간이 모여 삶을 이루며"}</h1>
-        </div>
+
 
         <form onSubmit={handleSubmit} className={styles.form}>
 
@@ -188,7 +211,11 @@ const WritePage: React.FC<WritePageProps> = ({ postId }) => {
 
             {/* 1. 제목 입력 (titleInputWrapper) */}
             <div className={styles.titleInputWrapper}>
+              <div className={styles.writeHeader}>
+                <h1 className={styles.writeTitle}>{postId ? "게시글 수정" : "순간과 순간이 모여 삶을 이루며"}</h1>
+              </div>
               <label className={styles.label}>제목</label>
+
               <input
                   type="text"
                   value={title}
@@ -197,6 +224,7 @@ const WritePage: React.FC<WritePageProps> = ({ postId }) => {
                   className={styles.titleInput}
                   required
               />
+
             </div>
 
             {/* 2. 썸네일 섹션 */}
@@ -287,6 +315,9 @@ const WritePage: React.FC<WritePageProps> = ({ postId }) => {
                 type="text"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
+                // ✅ 한글 조합 시작/종료 이벤트 추가
+                onCompositionStart={() => setIsComposing(true)}
+                onCompositionEnd={() => setIsComposing(false)}
                 onKeyDown={handleTagKeyDown}
                 placeholder="태그를 입력하고 Enter"
                 className={styles.textInput}

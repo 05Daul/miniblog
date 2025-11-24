@@ -110,10 +110,10 @@ export async function readPost(postId: number): Promise<PostDetailDTO> {
 
 // ✅ [수정] updatePost의 userSignId 인자 위치를 클라이언트 코드와 일치
 export async function updatePost(postId: number, postData: PostCreationRequestDTO, userSignId: string): Promise<PostEntity> {
-  const url = `${BLOGSERVICE_API}/${postId}`;
+  const url = `${BLOGSERVICE_API}/write/${postId}`;
 
   const response = await fetch(url, {
-    method: "PUT",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
       "userSignId": userSignId, // 헤더에 userSignId 포함
