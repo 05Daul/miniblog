@@ -58,11 +58,6 @@ export default function PostCard({ post }: PostCardProps) {
           onClick={() => router.push(`/post/${post.postId}`)}
           style={{ cursor: "pointer" }}
       >
-        {/*
-          ⚠️ [수정된 핵심 부분] ⚠️
-          썸네일 유무와 관계없이 .thumbnailWrapper를 항상 렌더링합니다.
-          CSS의 height 속성을 통해 기본 높이를 확보하고, 내용물만 조건부 렌더링합니다.
-        */}
         <div className={styles.thumbnailWrapper}>
           {post.thumbnail ? (
               // 썸네일이 있을 경우: 기존 로직
@@ -75,13 +70,11 @@ export default function PostCard({ post }: PostCardProps) {
                     onError={(e) => (e.currentTarget.style.display = "none")}
                 />
                 <div className={styles.overlay}>
-                  <h3 className={styles.overlayTitle}>{post.title}</h3>
                 </div>
               </>
           ) : (
               // 썸네일이 없을 경우: Placeholder 렌더링
               <div className={styles.noThumbnailPlaceholder}>
-                <h3 className={styles.noThumbnailTitle}>{post.title}</h3>
               </div>
           )}
         </div>

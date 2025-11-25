@@ -7,5 +7,6 @@ include'blogService'
 include 'gateway'
 include 'common'
 include 'frontend'
+include'communityService'
 
 

@@ -1,0 +1,30 @@
+spring:
+  application:
+    name:
+      'communityService'
+  :servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 50MB
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/miniblog
+    username: daul
+    password: 2364
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    database: postgresql
+    hibernate:
+     # ddl-auto: create
+      ddl-auto: update
+
+server:
+  port: 1006
+
+file:
+  # 1. 파일이 저장될 로컬 디렉토리 경로 (프로젝트 루트/uploads/images에 저장하도록 설정)
+  # 운영 환경에서는 이 경로를 외부 스토리지(S3 등)로 변경해야 합니다.
+  upload-dir: /Users/daul/Desktop/project/miniblog/miniblog/uploads/communityImages/
+  # 2. 이미지에 접근하기 위한 기본 URL (서버 주소와 WebConfig에 설정한 경로를 조합)
+  base-url: /communityImages/

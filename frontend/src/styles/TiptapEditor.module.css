@@ -1,8 +1,9 @@
 /* TiptapEditor.module.css */
 
 .editorWrapper {
+
   display: flex;
-  gap: 2rem;
+  gap: 0rem;
   height: 600px;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
@@ -17,10 +18,11 @@
 }
 
 .menuBar {
+
   display: flex;
-  gap: 0.5rem;
+  gap: 0.25rem;
   padding: 0.75rem;
-  background-color: #f9fafb;
+  background-color: #f9fafb; /* 상단 메뉴바 배경색 */
   border-bottom: 1px solid #e5e7eb;
   flex-wrap: wrap;
 }
@@ -63,7 +65,7 @@
   margin: 0.5rem 0;
   white-space: pre-wrap; /* 문단 내 공백 보존 */
   min-height: 1.5em; /* ✅ 빈 문단도 높이 확보 */
-  line-height: 1.5; /* ✅ 줄 높이 명시 - 미리보기와 동일 */
+  line-height: 1.8; /* ✅ 줄 높이 명시 - 미리보기와 동일 */
 }
 
 /* ✅ 빈 문단에 최소 높이 부여 */
@@ -120,20 +122,21 @@
 
 .previewPane {
   flex: 1;
+
   display: flex;
   flex-direction: column;
-  background-color: #f9fafb;
-  border-left: 1px solid #e5e7eb;
+  background-color: #ffffff; /* ✅ 흰색으로 통일 */
+  border-left: 1px solid #e5e7eb; /* ✅ 에디터 영역과 구분선 추가 */
   overflow-y: auto;
 }
 
 .previewTitle {
-  padding: 1rem;
+  padding: 1.20rem;
   margin: 0;
   font-size: 1rem;
   font-weight: 600;
-  border-bottom: 1px solid #e5e7eb;
-  background-color: #ffffff;
+  background-color: #ffffff; /* 흰색으로 통일 */
+  border-bottom: 1px solid #e5e7eb; /* 제목 아래 구분선 */
 }
 
 .previewContent {
@@ -147,8 +150,8 @@
 .previewContent p {
   margin: 0.5rem 0;
   white-space: pre-wrap;
-  min-height: 1.5em; /* ✅ 빈 문단도 높이 확보 */
-  line-height: 1.5; /* ✅ 줄 높이 명시 */
+  min-height: 1em; /* ✅ 빈 문단도 높이 확보 */
+  line-height: 1; /* ✅ 줄 높이 명시 */
 }
 
 /* ✅ 빈 문단 또는 &nbsp;만 있는 문단 처리 */
@@ -211,8 +214,6 @@
 
   /* 2. 작성 영역을 전체 너비로 확장 */
   .editorPane {
-    /* flex: 1; 이지만, 미리보기가 사라지면서 자동으로 전체 공간(100%)을 차지하게 됩니다. */
-    /* 명시적으로 flex-basis를 설정하면 더 안전합니다. */
     flex-basis: 100%;
     min-width: 100%;
   }
