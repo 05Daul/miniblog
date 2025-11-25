@@ -182,19 +182,19 @@ const MenuBar = ({ editor, addImage }: { editor: Editor | null; addImage: () => 
           H2
         </button>
         <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={editor.isActive('bold') ? styles.isActive : ''}>
-          Bold
+          B
         </button>
         <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={editor.isActive('italic') ? styles.isActive : ''}>
-          Italic
+          /
         </button>
         <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={editor.isActive('bulletList') ? styles.isActive : ''}>
-          List
+          •
         </button>
         <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={editor.isActive('orderedList') ? styles.isActive : ''}>
-          Ordered List
+          1.
         </button>
         <button type="button" onClick={addImage}>
-          Image
+          Img
         </button>
       </div>
   );
