@@ -1,6 +1,5 @@
-package daul.communityservice.entity.concern;
+package daul.communityservice.entity;
 
-import daul.communityservice.entity.BaseCommunityEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;

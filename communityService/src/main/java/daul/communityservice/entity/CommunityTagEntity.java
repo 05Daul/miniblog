@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "community_tags") // 테이블 이름을 변경하여 기존 posts의 tags 테이블과 구분
+@Table(name = "community_tags")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,5 +24,11 @@ public class CommunityTagEntity {
 
   @Column(nullable = false, unique = true, length = 50)
   private String tagName;
+
+  public static CommunityTagEntity of(String tagName) {
+    CommunityTagEntity entity = new CommunityTagEntity();
+    entity.setTagName(tagName);
+    return entity;
+  }
 
 }

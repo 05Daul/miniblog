@@ -1,4 +1,4 @@
-package daul.communityservice.entity.project;
+package daul.communityservice.entity;
 
 import jakarta.persistence.Embeddable;
 import java.io.Serializable;
@@ -8,13 +8,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
+//복합 키를 만들때 @Embeddable
 @Embeddable
 @Getter
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode
 @AllArgsConstructor
-public class ProjectTagId implements Serializable {
+public class CommunityPostTagId implements Serializable {
   private Long communityId;
   private Long tagId;
 

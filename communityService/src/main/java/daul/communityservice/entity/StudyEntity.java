@@ -1,8 +1,5 @@
-package daul.communityservice.entity.study;
+package daul.communityservice.entity;
 
-import daul.communityservice.entity.BaseCommunityEntity;
-import daul.communityservice.entity.PostFormat;
-import daul.communityservice.entity.RecruitmentStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
