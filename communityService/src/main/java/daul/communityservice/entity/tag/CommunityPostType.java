@@ -1,4 +1,4 @@
-package daul.communityservice.entity;
+package daul.communityservice.entity.tag;
 
 public enum CommunityPostType {
   PROJECT,

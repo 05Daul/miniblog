@@ -1,4 +1,4 @@
-package daul.communityservice.entity;
+package daul.communityservice.entity.tag;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

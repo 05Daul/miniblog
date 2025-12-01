@@ -1,7 +1,7 @@
 package daul.communityservice.repository;
 
-import daul.communityservice.entity.CommentEntity;
-import daul.communityservice.entity.CommunityPostType;
+import daul.communityservice.entity.comment.CommentEntity;
+import daul.communityservice.entity.tag.CommunityPostType;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,16 +14,19 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
   // 특정 게시글의 모든 댓글 조회
   List<CommentEntity> findByCommunityIdAndCommunityType(Long communityId, CommunityPostType communityType);
 
-  // 특정 게시글의 최상위 댓글만 조회 (대댓글 제외)
-  List<CommentEntity> findByCommunityIdAndCommunityTypeAndParentCommentIsNull(
+  // 특정 게시글의 최상위 댓글만 조회 (parentCommentId가 null)
+  List<CommentEntity> findByCommunityIdAndCommunityTypeAndParentCommentIdIsNull(
       Long communityId, CommunityPostType communityType);
 
-  // 페이징 처리된 최상위 댓글
-  Page<CommentEntity> findByCommunityIdAndCommunityTypeAndParentCommentIsNull(
-      Long communityId, CommunityPostType communityType, Pageable pageable);
-
   // 특정 댓글의 대댓글 조회
-  List<CommentEntity> findByParentComment(CommentEntity parentComment);
+  List<CommentEntity> findByParentCommentId(Long parentCommentId);
+
+  // 특정 댓글의 대댓글 조회 (삭제되지 않은 것만)
+  List<CommentEntity> findByParentCommentIdAndIsDeleted(Long parentCommentId, Boolean isDeleted);
+
+  // 페이징 처리된 최상위 댓글
+  Page<CommentEntity> findByCommunityIdAndCommunityTypeAndParentCommentIdIsNull(
+      Long communityId, CommunityPostType communityType, Pageable pageable);
 
   // 사용자가 작성한 댓글 조회
   List<CommentEntity> findByUserId(String userId);
@@ -51,6 +54,4 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
 
   // 특정 사용자의 댓글 수
   Long countByUserId(String userId);
-
-
 }

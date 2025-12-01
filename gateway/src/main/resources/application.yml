@@ -54,6 +54,11 @@ spring:
           predicates:
             - Path=/user/**
 
+        - id: communityService
+          uri: http://127.0.0.1:1006
+          predicates:
+            - Path=/community/**
+
   datasource:
     url: jdbc:postgresql://localhost:5432/miniblog
     username: daul

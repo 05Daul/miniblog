@@ -1,5 +1,8 @@
-package daul.communityservice.entity;
+package daul.communityservice.entity.study;
 
+import daul.communityservice.entity.BaseCommunityEntity;
+import daul.communityservice.entity.PostFormat;
+import daul.communityservice.entity.RecruitmentStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -7,9 +10,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "study_entity")
@@ -17,6 +22,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 public class StudyEntity extends BaseCommunityEntity {
   @Column(name = "start_date", nullable = false)
   private LocalDate startDate;

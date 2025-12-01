@@ -1,11 +1,12 @@
 package daul.communityservice.repository;
 
-import daul.communityservice.entity.CommunityTagEntity;
+import daul.communityservice.entity.tag.CommunityPostTagEntity;
+import daul.communityservice.entity.tag.CommunityTagEntity;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface CommunityTagRepository extends JpaRepository<CommunityTagEntity, Long> {
 

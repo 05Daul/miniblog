@@ -14,7 +14,6 @@ function MiniBlogContent() {
         <Layout>
           <div style={{ padding: '10px 0' }}>
 
-            {/* 🎯 핵심 수정: 이 컨테이너가 모든 내부 콘텐츠를 중앙 정렬합니다. */}
             <div style={{ padding: '0 10%', maxWidth: '1400px', margin: '0 auto' }}>
 
               {/* 탭 메뉴 */}
