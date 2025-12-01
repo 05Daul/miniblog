@@ -1,7 +1,7 @@
 import styles from "../../../styles/layout/layout.module.css";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import {useEffect, useState} from "react";
+import {useRouter} from "next/router";
 import LoginModal from "../../userService/LoginModal"; // (경로 확인 필요)
 
 export default function Topbar() {
@@ -37,8 +37,8 @@ export default function Topbar() {
       <>
         <header className={styles.topbar}>
           {/* 왼쪽 로고 */}
-          <Link href="/">
-            <div className={styles.leftSection}>MomenTory</div>
+          <Link href="/" className={styles.leftSection}>
+           MomenTory
           </Link>
 
           {/* 오른쪽 메뉴 */}
@@ -47,23 +47,23 @@ export default function Topbar() {
 
             {isLoggedIn ? (
                 <>
+                  <Link href="/community" className={`${styles.rightItem} ${styles.navLink}`}>
+                      커뮤니티
+                  </Link>
                   <div className={styles.rightItem}>알림</div>
                   <div className={styles.rightItem}>채팅</div>
-                  <Link href="/write" passHref>
-                    <div className={`${styles.rightItem} ${styles.writeButton}`}>
+                  <Link href="/write" className={`${styles.rightItem} ${styles.writeButton}`}>
                       Log 작성
-                    </div>
                   </Link>
-                  <div className={styles.rightItem} onClick={handleLogout} style={{cursor:'pointer'}}>
-                    {/* 임시로 로그아웃 버튼으로 기능 대체, 추후 마이페이지 링크로 복구 가능 */}
+                  <div className={styles.rightItem} onClick={handleLogout}
+                       style={{cursor: 'pointer'}}>
                     로그아웃
                   </div>
                 </>
             ) : (
-                /* 로그인 버튼 클릭 시 모달 open */
                 <div
                     className={styles.rightItem}
-                    style={{ cursor: "pointer" }}
+                    style={{cursor: "pointer"}}
                     onClick={() => setShowLoginModal(true)}
                 >
                   로그인

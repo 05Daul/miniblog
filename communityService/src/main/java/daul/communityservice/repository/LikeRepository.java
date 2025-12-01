@@ -1,15 +1,16 @@
 package daul.communityservice.repository;
 
-import daul.communityservice.entity.CommunityPostType;
-import daul.communityservice.entity.LikeEntity;
+import daul.communityservice.entity.tag.CommunityPostType;
+import daul.communityservice.entity.like.LikeEntity;
 import java.util.List;
-import org.apache.el.stream.Optional;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface LikeRepository extends JpaRepository<LikeEntity,Long> {
-
+  Optional<LikeEntity> findByUserSignIdAndCommunityIdAndCommunityType(
+      String userSignId, Long communityId, CommunityPostType communityType);
   // 좋아요 존재 여부 확인
   boolean existsByUserSignIdAndCommunityIdAndCommunityType(
       String userSignId, Long communityId, CommunityPostType communityType);
@@ -17,14 +18,6 @@ public interface LikeRepository extends JpaRepository<LikeEntity,Long> {
   // 특정 게시글의 좋아요 개수
   Long countByCommunityIdAndCommunityType(Long communityId, CommunityPostType communityType);
 
-  // 특정 게시글의 모든 좋아요
-  List<LikeEntity> findByCommunityIdAndCommunityType(Long communityId, CommunityPostType communityType);
-
-  // 특정 사용자가 누른 모든 좋아요
-  List<LikeEntity> findByUserSignId(String userSignId);
-
-  // 특정 사용자가 특정 타입에 누른 좋아요
-  List<LikeEntity> findByUserSignIdAndCommunityType(String userSignId, CommunityPostType communityType);
 
   // 특정 사용자의 좋아요 개수
   Long countByUserSignId(String userSignId);

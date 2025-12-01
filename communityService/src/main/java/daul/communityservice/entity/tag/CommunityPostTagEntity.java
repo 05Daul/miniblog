@@ -1,12 +1,10 @@
-package daul.communityservice.entity;
+package daul.communityservice.entity.tag;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import daul.communityservice.entity.BaseCommunityEntity;
+import daul.communityservice.entity.concern.ConcernEntity;
+import daul.communityservice.entity.project.ProjectEntity;
+import daul.communityservice.entity.study.StudyEntity;
+import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +19,7 @@ import lombok.Setter;
 @EqualsAndHashCode(of = "id")
 public class CommunityPostTagEntity {
 
-  //복합키의 pk
+  // 복합키의 PK
   @EmbeddedId
   private CommunityPostTagId id;
 
@@ -30,8 +28,8 @@ public class CommunityPostTagEntity {
   private CommunityPostType communityType;
 
   // 생성 편의 메서드
-  public static CommunityPostTagEntity create(BaseCommunityEntity post, CommunityTagEntity tag) {
-    CommunityPostTagId id = new CommunityPostTagId(post.getCommunityId(), tag.getTagId());
+  public static CommunityPostTagEntity create(BaseCommunityEntity post, Long tagId) {
+    CommunityPostTagId id = new CommunityPostTagId(post.getCommunityId(), tagId);
     CommunityPostType type = determineType(post);
 
     CommunityPostTagEntity entity = new CommunityPostTagEntity();
@@ -39,6 +37,7 @@ public class CommunityPostTagEntity {
     entity.communityType = type;
     return entity;
   }
+
   private static CommunityPostType determineType(BaseCommunityEntity post) {
     if (post instanceof ProjectEntity) {
       return CommunityPostType.PROJECT;
@@ -49,7 +48,6 @@ public class CommunityPostTagEntity {
     if (post instanceof ConcernEntity) {
       return CommunityPostType.CONCERN;
     }
-    throw new IllegalArgumentException("Unknown post type: " + post.getClass().getName());
+    throw new IllegalArgumentException("Unknown post type");
   }
-
 }

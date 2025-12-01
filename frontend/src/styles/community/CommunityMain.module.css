@@ -1,0 +1,197 @@
+/* src/styles/community/CommunityMain.module.css */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 15px ;
+  min-height: calc(100vh - 60px);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-left: 0;
+  font-weight: 400;
+}
+
+/* 탭 */
+.tabContainer {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 14px 32px;
+  border-radius: 16px;
+  background: #f3f4f6;
+  font-weight: 600;
+  font-size: 16px;
+  color: #6b7280;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tab:hover { background: #e5e7eb; color: #111827; }
+.activeTab { background: #10b981 !important; color: white !important; box-shadow: 0 8px 24px rgba(16,185,129,0.35); }
+.tabEmoji { font-size: 22px; }
+
+/* 그리드 */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 70px;
+}
+
+.cardLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.card {
+  background: white;
+  border-radius: 24px;
+  padding: 28px;
+  border: 1.5px solid #e5e7eb;
+  transition: all 0.35s ease;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.04);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 24px 48px rgba(0,0,0,0.15);
+  border-color: #10b981;
+}
+
+.badge {
+  align-self: flex-start;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+.badgeConcern { background: #fffbeb; color: #d97706; }
+.badgeProject { background: #dbeafe; color: #2563eb; }
+.badgeStudy { background: #ecfdf5; color: #059669; }
+
+.cardTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 16px;
+  line-height: 1.4;
+}
+
+.cardExcerpt {
+  color: #4b5563;
+  font-size: 15px;
+  line-height: 1.7;
+  flex-grow: 1;
+  margin-bottom: 24px;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.authorInfo { display: flex; align-items: center; gap: 8px; }
+.author { font-weight: 600; color: #374151; }
+.stats { display: flex; gap: 18px; font-size: 13px; }
+
+/* 플로팅 버튼 */
+.fab {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 66px;
+  height: 66px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 32px rgba(16,185,129,0.45);
+  z-index: 1000;
+  transition: all 0.3s;
+}
+
+.fab:hover {
+  transform: scale(1.12) rotate(90deg);
+  box-shadow: 0 16px 40px rgba(16,185,129,0.55);
+}
+.statusInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px; /* 제목과의 간격 */
+  margin-top: -8px; /* 뱃지와의 간격 좁히기 */
+}
+
+.statusBadge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+/* 모집중 (RECRUITING) 스타일 */
+.statusRecruiting {
+  background: #D1FAE5; /* 연한 녹색 계열 */
+  color: #059669; /* 진한 녹색 */
+}
+
+/* 모집 마감 (COMPLETED/CLOSED) 스타일 */
+.statusClosed {
+  background: #FEE2E2; /* 연한 빨강 계열 */
+  color: #EF4444; /* 진한 빨강 */
+}
+.cardHeader {
+  display: flex;
+  justify-content: space-between; /* 양쪽 끝으로 배치 */
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* 뱃지들을 묶는 컨테이너 */
+.badgeContainer {
+  display: flex;
+  gap: 8px; /* 뱃지 사이 간격 */
+  align-items: center;
+}
+
+/* ⭐️ [추가] 날짜 정보를 오른쪽으로 보내기 위한 스타일 ⭐️ */
+.dateRight {
+  /* 날짜 정보가 여러 개일 경우를 대비하여 Flex로 설정 (현재는 하나지만) */
+  display: flex;
+  gap: 12px;
+  /* 날짜 폰트 스타일 */
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* 날짜 정보 텍스트 스타일 (재사용) */
+.dateInfo {
+  white-space: nowrap; /* 줄바꿈 방지 */
+  font-size: 13px;
+  color: #6b7280; /* 회색 텍스트 */
+  font-weight: 500;
+}
