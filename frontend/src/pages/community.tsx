@@ -16,11 +16,29 @@ import {useInView} from 'react-intersection-observer';
 
 type TabType = 'all' | 'concern' | 'project' | 'study';
 
-/*interface ExtendedPostSummary { ... } // ⭐️ [삭제 완료] */
+// ⭐️⭐️⭐️ [1] 마감일 체크 헬퍼 함수 추가 (핵심) ⭐️⭐️⭐️
+/**
+ * 마감일(Deadline)이 현재 시간보다 지났는지 확인하는 함수
+ * @param deadlineDateString "YYYY-MM-DD" 형식의 마감일 문자열
+ * @returns 마감일이 지났으면 true, 아니면 false
+ */
+const isDeadlinePassed = (deadlineDateString: string | undefined): boolean => {
+  if (!deadlineDateString) return false;
+
+  // YYYY-MM-DD 형식으로 Date 객체 생성
+  const deadlineDate = new Date(deadlineDateString);
+
+  // 마감일 다음 날의 자정(00:00:00)이 지나야 '마감'으로 처리
+  deadlineDate.setDate(deadlineDate.getDate() + 1);
+
+  const now = new Date();
+
+  // 마감일 다음 날 자정이 현재 시간보다 이전이거나 같으면 마감된 것으로 간주
+  return deadlineDate.getTime() <= now.getTime();
+};
 
 export default function Community() {
   const [activeTab, setActiveTab] = useState<TabType>('all');
-  // ⭐️ [확인] CommunityPost[]로 설정 완료
   const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [page, setPage] = useState(0); // 다음으로 로드할 페이지 인덱스 (0부터 시작)
   const [hasMore, setHasMore] = useState(true);
@@ -40,9 +58,8 @@ export default function Community() {
   }, []);
 
   // ----------------------------------------------------------------------------------
-  // 1. 단일 탭 데이터 요청 및 처리 함수 (API 호출 + 좋아요/댓글/태그 정보 추가)
+  // 1. 단일 탭 데이터 요청 및 처리 함수
   // ----------------------------------------------------------------------------------
-  // ⭐️ [확인] 반환 타입이 { posts: CommunityPost[], ... } 로 정확히 설정됨
   const fetchAndProcessPosts = async (tab: TabType, pageNum: number): Promise<{
     posts: CommunityPost[],
     totalPages: number
@@ -101,7 +118,7 @@ export default function Community() {
   };
 
   // ----------------------------------------------------------------------------------
-  // 2. 중앙 데이터 로딩 및 상태 업데이트 함수 (중복 로딩 방지 로직 포함)
+  // 2. 중앙 데이터 로딩 및 상태 업데이트 함수
   // ----------------------------------------------------------------------------------
   const loadData = async (targetPage: number, tab: TabType) => {
     // 이미 로딩 중이거나 더 이상 데이터가 없으면 요청하지 않음
@@ -110,7 +127,6 @@ export default function Community() {
     setIsLoading(true);
 
     try {
-      // ⭐️ [수정] fetchedPosts 타입을 CommunityPost[]로 명시합니다.
       let fetchedPosts: CommunityPost[] = [];
       let totalPages = 0;
 
@@ -139,7 +155,7 @@ export default function Community() {
 
       if (fetchedPosts.length > 0) {
         setPosts(prev => {
-          // ⭐️ [핵심 수정] 중복 게시글 필터링 로직
+          // 중복 게시글 필터링 로직
           const existingIds = new Set(prev.map(p => `${p.postType}-${p.communityId}`));
           const filteredNewPosts = fetchedPosts.filter(p => !existingIds.has(`${p.postType}-${p.communityId}`));
 
@@ -149,7 +165,7 @@ export default function Community() {
           return finalPosts;
         });
 
-        // ⭐️ [핵심 수정] 성공적으로 데이터를 로드한 후에만 페이지 인덱스 업데이트
+        // 성공적으로 데이터를 로드한 후에만 페이지 인덱스 업데이트
         setPage(targetPage + 1);
         setHasMore(targetPage + 1 < totalPages);
 
@@ -168,11 +184,10 @@ export default function Community() {
   // 3. Effect for Tab Change (Initial Load: Page 0)
   // ----------------------------------------------------------------------------------
   useEffect(() => {
-    // ⭐️ [수정] 탭 변경 시 상태 초기화 및 페이지 0 로드 요청
+    // 탭 변경 시 상태 초기화 및 페이지 0 로드 요청
     setPosts([]);
     setPage(0);
     setHasMore(true);
-    // Strict Mode에서 두 번 호출되지만, loadData 내부의 isLoading 체크와 중복 필터링으로 해결
     loadData(0, activeTab);
   }, [activeTab, userSignId]);
 
@@ -181,10 +196,10 @@ export default function Community() {
   // ----------------------------------------------------------------------------------
   useEffect(() => {
     if (inView && hasMore && !isLoading) {
-      // ✅ inView일 때, 현재 page 상태(다음 로드할 페이지 번호)를 사용하여 데이터 로드
+      // inView일 때, 현재 page 상태(다음 로드할 페이지 번호)를 사용하여 데이터 로드
       loadData(page, activeTab);
     }
-  }, [inView, hasMore, isLoading]); // page 상태 변화에 직접 의존하지 않아 무한 루프 위험 방지
+  }, [inView, hasMore, isLoading, page]); // page를 의존성 배열에 명시적으로 추가
 
   const handleLikeToggle = async (post: CommunityPost) => {
     if (!userSignId) {
@@ -279,6 +294,25 @@ export default function Community() {
                   ? plainText.substring(0, 100) + '...'
                   : plainText;
 
+
+              // ⭐️⭐️⭐️ [2] 모집 상태 자동 변경 로직 적용 (핵심) ⭐️⭐️⭐️
+              let displayStatus = post.status; // 기본값은 서버 상태
+              let statusText = post.status === RecruitmentStatus.RECRUITING ? '모집중' : '모집 마감'; // 마감 텍스트를 '모집 마감'으로 통일
+
+              // PROJECT 타입이고 마감일이 있는 경우에만 클라이언트 측에서 상태 체크
+              if (post.postType === CommunityPostType.PROJECT && post.deadline) {
+                if (isDeadlinePassed(post.deadline)) {
+                  // 마감일이 지났다면, 서버 상태와 무관하게 'COMPLETED'로 덮어씌움
+                  displayStatus = RecruitmentStatus.COMPLETED;
+                  statusText = '모집 마감';
+                }
+              }
+
+              // 최종 CSS 클래스 결정
+              const statusClass = displayStatus === RecruitmentStatus.RECRUITING
+                  ? styles.statusRecruiting
+                  : styles.statusClosed;
+
               return (
                   <Link
                       key={`${post.postType}-${post.communityId}`} // ⭐️ [확인] key는 고유하게 postType과 communityId를 조합하여 사용
@@ -292,12 +326,12 @@ export default function Community() {
                           {/* 1. 타입 뱃지 (기존 위치) */}
                           <span className={`${styles.badge} ${badgeClass}`}>{postTypeLabel}</span>
 
-                          {/* 2. 모집 상태 뱃지 (기존 위치) */}
-                          {(post.postType === CommunityPostType.PROJECT || post.postType === CommunityPostType.STUDY) && post.status && (
+                          {/* 2. 모집 상태 뱃지 (수정된 로직 적용) */}
+                          {(post.postType === CommunityPostType.PROJECT || post.postType === CommunityPostType.STUDY) && (
                               <span
-                                  className={`${styles.statusBadge} ${post.status === RecruitmentStatus.RECRUITING ? styles.statusRecruiting : styles.statusClosed}`}>
-                        {post.status === RecruitmentStatus.RECRUITING ? '모집중' : '마감'}
-                    </span>
+                                  className={`${styles.statusBadge} ${statusClass}`}>
+                                {statusText}
+                            </span>
                           )}
                         </div>
 

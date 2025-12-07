@@ -506,12 +506,11 @@ export default function PostDetail() {
               >
                 ❤️ 좋아요 {likeCount}
               </button>
-              <span className={styles.commentStat}>💬 댓글 {commentCount}</span>
             </div>
           </div>
 
           <div className={styles.commentsSection}>
-            <h2 className={styles.commentsTitle}>댓글 {commentCount}</h2>
+            <h2 className={styles.commentsTitle}>💬 댓글  {commentCount}</h2>
 
             {userSignId && (
                 <div className={styles.commentInput}>

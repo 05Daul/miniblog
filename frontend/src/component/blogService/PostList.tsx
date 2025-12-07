@@ -3,12 +3,10 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import PostCard from './PostCard';
 import styles from "@/styles/blogService/post.module.css";
-// ✅ getFriendsPosts를 포함하여 import
 import { getTrendingPosts, getRecentPosts, getFriendsPosts } from "@/api/blogService/blog";
 import { PostEntity } from "@/types/blogService/blogType";
 const PAGE_SIZE = 10;
 
-// Prop 타입 정의 유지
 interface PostListProps {
   postType: 'trending' | 'recent' |'friends';
 }
@@ -18,16 +16,19 @@ export default function PostList({ postType }: PostListProps) {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  // ✅ 친구 게시물 조회에 필요한 currentUserId 상태 추가
   const [currentUserId, setCurrentUserId] = useState<string>('');
 
 
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  const pageRef = useRef(0);
-  pageRef.current = page;
+  // loading 상태를 useRef로 관리하여 Observer 콜백에서 최신 값을 참조하도록 함
+  const loadingRef = useRef(false);
+  loadingRef.current = loading;
+
+  // hasMore 상태를 useRef로 관리하여 Observer 콜백에서 최신 값을 참조하도록 함
   const hasMoreRef = useRef(true);
   hasMoreRef.current = hasMore;
+
 
   // --- 0. 최초 마운트 시 사용자 ID 로드 ---
   useEffect(() => {
@@ -35,26 +36,24 @@ export default function PostList({ postType }: PostListProps) {
     if (id) {
       setCurrentUserId(id);
     } else {
-      // ID가 없으면 'friends' 타입은 로드할 수 없으므로 에러 처리나 기본 동작 설정이 필요합니다.
       console.error("User ID not found in localStorage. Cannot load friend posts.");
     }
   }, []);
 
 
   const loadPosts = useCallback(async (pageToLoad: number, currentPostType: 'trending' | 'recent' | 'friends') => {
-    if (currentPostType === 'friends' && !currentUserId) return; // ID가 없으면 로드 중단
+    if (currentPostType === 'friends' && !currentUserId) return;
+    if (loadingRef.current) return;
 
     setLoading(true);
 
     try {
-      // ✅ postType에 따른 적절한 fetch 함수 선택
       let res;
       if (currentPostType === 'trending') {
         res = await getTrendingPosts(pageToLoad, PAGE_SIZE);
       } else if (currentPostType === 'recent') {
         res = await getRecentPosts(pageToLoad, PAGE_SIZE);
       } else if (currentPostType === 'friends') {
-        // ✅ getFriendsPosts는 userSignId를 첫 번째 인자로 받습니다.
         res = await getFriendsPosts(currentUserId, pageToLoad, PAGE_SIZE);
       } else {
         setLoading(false);
@@ -65,7 +64,6 @@ export default function PostList({ postType }: PostListProps) {
         setPosts(prevPosts =>
             pageToLoad === 0 ? res.content! : [...prevPosts, ...res.content!]
         );
-        // last가 false일 경우에만 hasMore를 true로 유지
         setHasMore(!res.last);
       } else {
         setHasMore(false);
@@ -76,28 +74,39 @@ export default function PostList({ postType }: PostListProps) {
     } finally {
       setLoading(false);
     }
-  }, [currentUserId]); // ✅ loadPosts의 의존성 배열에 currentUserId 추가
+  }, [currentUserId]);
 
 
   // --- 1. postType 또는 currentUserId가 변경될 때 상태 초기화 및 첫 페이지 로드 ---
   useEffect(() => {
-    if (postType === 'friends' && !currentUserId) return; // friends 타입인데 ID가 없으면 로드하지 않음
+    if (postType === 'friends' && !currentUserId) {
+      setPosts([]);
+      setPage(0);
+      setHasMore(true);
+      setLoading(false);
+      return;
+    }
 
     setPosts([]);
     setPage(0);
     setHasMore(true);
-    setLoading(false);
     loadPosts(0, postType);
-  }, [postType, currentUserId, loadPosts]); // ✅ currentUserId를 의존성 배열에 추가
+  }, [postType, currentUserId, loadPosts]);
 
 
-  // --- 2. Intersection Observer 설정 (로직 수정 없이 유지) ---
+  // --- 2. Intersection Observer 설정 (최종 보강 로직) ---
   useEffect(() => {
+    if (!loaderRef.current || !hasMoreRef.current) return;
+
     const observer = new IntersectionObserver(
         (entries) => {
           const target = entries[0];
-          // 로더가 보이고, 로딩 중이 아니며, 더 로드할 데이터가 남아있을 때
-          if (target.isIntersecting && !loading && hasMoreRef.current) {
+
+          // isIntersecting 상태 확인 로그
+          console.log(`[Observer Status] isIntersecting: ${target.isIntersecting}, loading: ${loadingRef.current}, hasMore: ${hasMoreRef.current}`);
+
+          if (target.isIntersecting && !loadingRef.current && hasMoreRef.current) {
+            console.log("✅ Intersection Observer: New page requested.");
             setPage(prevPage => prevPage + 1);
           }
         },
@@ -108,16 +117,13 @@ export default function PostList({ postType }: PostListProps) {
         }
     );
 
-    if (loaderRef.current) {
-      observer.observe(loaderRef.current);
-    }
+    observer.observe(loaderRef.current);
 
     return () => {
-      if (loaderRef.current) {
-        observer.unobserve(loaderRef.current);
-      }
+      observer.disconnect();
     };
-  }, [loading]);
+    // ✅ 로더 참조(loaderRef.current)와 hasMore 상태가 바뀔 때마다 재등록
+  }, [loaderRef.current, hasMore]);
 
 
   // --- 3. page 상태 변화 감지 및 추가 로딩 (유지) ---
@@ -130,10 +136,13 @@ export default function PostList({ postType }: PostListProps) {
 
   // --- 4. 렌더링 결과 ---
   return (
-      <div className={styles.postListContainer}>
-        {posts.map(post => (
-            <PostCard key={post.postId} post={post} />
-        ))}
+      // ✅ 최상위 div에 CSS 클래스 적용 (높이 확보를 위한 mainContentWrapper)
+      <div className={styles.mainContentWrapper}>
+        <div className={styles.postListContainer}>
+          {posts.map(post => (
+              <PostCard key={post.postId} post={post} />
+          ))}
+        </div>
 
         {/* 무한 스크롤의 끝을 감지할 로더 요소 */}
         {hasMore && (
