@@ -1,0 +1,162 @@
+/* src/styles/userService/ModalFriends.module.css */
+
+/* 어두운 반투명 오버레이 */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* 더 자연스러운 어두움 */
+  z-index: 999;
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+/* 사이드바 본체 - 오른쪽 고정, 탑바 아래부터 */
+.modalContent {
+  right: 5%;
+  position: fixed;
+  top: 64px;
+  min-height: 230px;
+  padding: 15px;
+  width: 220px; /* 원하는 너비 */
+  max-width: 90vw;
+  background-color: white;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
+  z-index: 1000; /* 🔑 수정: 999 -> 1000. 배경보다 위에 위치 */
+  overflow-y: auto;
+  animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  padding-top: 10px;
+  border-radius: 0.5rem; /* 예: 8px */
+}
+
+.modalContent::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modalContent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modalContent::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+/* 제목 스타일 (사이드바용으로 좀 더 크게) */
+.modalTitle {
+  font-size: 1.75rem; /* text-3xl */
+  font-weight: 700;
+  color: #1f2937; /* text-gray-800 */
+  margin-bottom: 0.5rem;
+}
+
+/* 일반 텍스트 메시지 */
+.modalMessage {
+  color: #4b5563;
+  font-size: 1rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* 버튼 그룹 */
+.modalActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* 버튼 공통 */
+.cancelButton,
+.deleteButton {
+  flex: 1;
+  padding: 0.875rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* 취소 버튼 */
+.cancelButton {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.cancelButton:hover {
+  background-color: #d1d5db;
+}
+
+/* 확인/요청 버튼 (기존 빨간색 유지) */
+.deleteButton {
+  background-color: #dc2626;
+  color: white;
+}
+
+.deleteButton:hover {
+  background-color: #b91c1c;
+}
+
+.deleteButton:disabled {
+  background-color: #fca5a5;
+  cursor: not-allowed;
+}
+
+/* 애니메이션 키프레임 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.closeButton {
+  /* 기존 스타일 제거 또는 수정 */
+  font-size: 2rem; /* X 크기 */
+  font-weight: 300;
+  line-height: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+  margin-right: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #dc2626; /* text-red-600 */
+}
+
+.closeButton:hover {
+  color: #b91c1c; /* hover:text-red-700 */
+}
+
+
+.listItemDeleteButton {
+  background-color: #dc2626; /* red-600 */
+  color: white;
+
+  border-radius: 0.25rem; /* rounded */
+  font-weight: 400;
+  padding: 0.1rem 0.24rem;
+  transition: all 0.1s;
+  margin-left: 4px;
+}
+
+.listItemDeleteButton:hover {
+  background-color: #b91c1c; /* red-700 */
+}

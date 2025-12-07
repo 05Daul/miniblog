@@ -1,16 +1,16 @@
-// component/blogService/PostList.tsx
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import PostCard from './PostCard';
 import styles from "@/styles/blogService/post.module.css";
-import { getTrendingPosts, getRecentPosts } from "@/api/blogService/blog";
+// ✅ getFriendsPosts를 포함하여 import
+import { getTrendingPosts, getRecentPosts, getFriendsPosts } from "@/api/blogService/blog";
 import { PostEntity } from "@/types/blogService/blogType";
 const PAGE_SIZE = 10;
 
 // Prop 타입 정의 유지
 interface PostListProps {
-  postType: 'trending' | 'recent';
+  postType: 'trending' | 'recent' |'friends';
 }
 
 export default function PostList({ postType }: PostListProps) {
@@ -18,34 +18,55 @@ export default function PostList({ postType }: PostListProps) {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  // ✅ 친구 게시물 조회에 필요한 currentUserId 상태 추가
+  const [currentUserId, setCurrentUserId] = useState<string>('');
+
 
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  // pageRef와 hasMoreRef는 현재 로직에서 잘 사용되고 있으므로 유지합니다.
   const pageRef = useRef(0);
   pageRef.current = page;
   const hasMoreRef = useRef(true);
   hasMoreRef.current = hasMore;
 
+  // --- 0. 최초 마운트 시 사용자 ID 로드 ---
+  useEffect(() => {
+    const id = localStorage.getItem('userSignId');
+    if (id) {
+      setCurrentUserId(id);
+    } else {
+      // ID가 없으면 'friends' 타입은 로드할 수 없으므로 에러 처리나 기본 동작 설정이 필요합니다.
+      console.error("User ID not found in localStorage. Cannot load friend posts.");
+    }
+  }, []);
 
-  // loadPosts 함수는 useCallback 의존성 배열에 postType을 추가하여,
-  // 탭 변경 시 올바른 postType으로 로드되도록 보장합니다.
-  const loadPosts = useCallback(async (pageToLoad: number, currentPostType: 'trending' | 'recent') => {
-    // ... (기존 loadPosts 로직 유지)
+
+  const loadPosts = useCallback(async (pageToLoad: number, currentPostType: 'trending' | 'recent' | 'friends') => {
+    if (currentPostType === 'friends' && !currentUserId) return; // ID가 없으면 로드 중단
+
     setLoading(true);
 
     try {
-      const fetchFunction = currentPostType === 'trending' ? getTrendingPosts : getRecentPosts;
-
-      const res = await fetchFunction(pageToLoad, PAGE_SIZE);
+      // ✅ postType에 따른 적절한 fetch 함수 선택
+      let res;
+      if (currentPostType === 'trending') {
+        res = await getTrendingPosts(pageToLoad, PAGE_SIZE);
+      } else if (currentPostType === 'recent') {
+        res = await getRecentPosts(pageToLoad, PAGE_SIZE);
+      } else if (currentPostType === 'friends') {
+        // ✅ getFriendsPosts는 userSignId를 첫 번째 인자로 받습니다.
+        res = await getFriendsPosts(currentUserId, pageToLoad, PAGE_SIZE);
+      } else {
+        setLoading(false);
+        return;
+      }
 
       if (res?.content) {
         setPosts(prevPosts =>
             pageToLoad === 0 ? res.content! : [...prevPosts, ...res.content!]
         );
-
-        setHasMore(pageToLoad < res.totalPages - 1);
-
+        // last가 false일 경우에만 hasMore를 true로 유지
+        setHasMore(!res.last);
       } else {
         setHasMore(false);
       }
@@ -55,23 +76,22 @@ export default function PostList({ postType }: PostListProps) {
     } finally {
       setLoading(false);
     }
-  }, []); // ✅ 의존성 배열에 아무것도 없으면 currentPostType 변경 시 새 함수가 생성되지 않음.
-          // 로직이 postType을 인자로 받으므로, 이 부분을 빈 배열로 두는 것은 유지해도 괜찮습니다.
+  }, [currentUserId]); // ✅ loadPosts의 의존성 배열에 currentUserId 추가
 
 
-  // --- 1. postType이 변경될 때 상태 초기화 및 첫 페이지 로드 (유지) ---
+  // --- 1. postType 또는 currentUserId가 변경될 때 상태 초기화 및 첫 페이지 로드 ---
   useEffect(() => {
-    // ... (기존 로직 유지)
+    if (postType === 'friends' && !currentUserId) return; // friends 타입인데 ID가 없으면 로드하지 않음
+
     setPosts([]);
     setPage(0);
     setHasMore(true);
     setLoading(false);
     loadPosts(0, postType);
-  }, [postType, loadPosts]);
+  }, [postType, currentUserId, loadPosts]); // ✅ currentUserId를 의존성 배열에 추가
 
 
   // --- 2. Intersection Observer 설정 (로직 수정 없이 유지) ---
-  // Observer의 콜백 함수는 최신 hasMoreRef.current를 사용하므로, 로직은 유효합니다.
   useEffect(() => {
     const observer = new IntersectionObserver(
         (entries) => {
@@ -97,7 +117,7 @@ export default function PostList({ postType }: PostListProps) {
         observer.unobserve(loaderRef.current);
       }
     };
-  }, [loading]); // loading 상태가 변경될 때만 Observer 재설정
+  }, [loading]);
 
 
   // --- 3. page 상태 변화 감지 및 추가 로딩 (유지) ---
@@ -108,14 +128,14 @@ export default function PostList({ postType }: PostListProps) {
   }, [page, postType, loadPosts]);
 
 
-  // --- 4. ✅ [수정] 렌더링 결과에 loaderRef 추가 ---
+  // --- 4. 렌더링 결과 ---
   return (
       <div className={styles.postListContainer}>
         {posts.map(post => (
             <PostCard key={post.postId} post={post} />
         ))}
 
-        {/* ✅ 무한 스크롤의 끝을 감지할 로더 요소 추가 */}
+        {/* 무한 스크롤의 끝을 감지할 로더 요소 */}
         {hasMore && (
             <div ref={loaderRef} className={styles.loader}>
               {loading && <p>로딩 중...</p>}

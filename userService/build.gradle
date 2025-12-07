@@ -44,13 +44,16 @@ dependencies {
 
     // redis -> 토큰 캐시 저장 목적
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
+    //카프카
+    implementation 'org.springframework.kafka:spring-kafka'
     // jwt
     // JWT 생성 및 검증을 위한 라이브러리
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
     implementation project(':common')}
+
+
 
 dependencyManagement {
     imports {

@@ -1,13 +1,19 @@
 import styles from "../../../styles/layout/layout.module.css";
 import Link from "next/link";
-import {useEffect, useState} from "react";
-import {useRouter} from "next/router";
-import LoginModal from "../../userService/LoginModal"; // (경로 확인 필요)
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import LoginModal from "../../userService/LoginModal";
+import FriendActionModal from "@/component/userService/FriendActionModal";
+
+// 💡 ChatSidebar import는 제거했습니다. (ChatPage로 이동할 것이기 때문)
 
 export default function Topbar() {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false); // 모달 표시 상태
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showFriendModal, setShowFriendModal] = useState(false);
+
+  // 💡 isChatOpen 상태도 제거했습니다. (페이지 이동 방식이므로 불필요)
 
   // 초기 로그인 상태 확인
   useEffect(() => {
@@ -19,13 +25,11 @@ export default function Topbar() {
     setIsLoggedIn(!!token);
   };
 
-  // 로그인 성공 시 호출될 함수
   const handleLoginSuccess = () => {
-    checkLoginStatus(); // 상태 갱신 (로그인 버튼 -> 마이페이지로 변경됨)
-    // 필요하면 router.reload() 혹은 router.push('/') 등을 추가
+    checkLoginStatus();
+    setShowLoginModal(false); // 💡 로그인 성공 시 모달 닫기 추가
   };
 
-  // 로그아웃 함수
   const handleLogout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
@@ -33,28 +37,55 @@ export default function Topbar() {
     router.push("/");
   };
 
+  // 로그인한 사용자 signId 가져오기
+  const currentUserSignId = typeof window !== "undefined"
+      ? localStorage.getItem("userSignId") || ""
+      : "";
+
   return (
       <>
         <header className={styles.topbar}>
-          {/* 왼쪽 로고 */}
           <Link href="/" className={styles.leftSection}>
-           MomenTory
+            MomenTory
           </Link>
 
-          {/* 오른쪽 메뉴 */}
           <nav className={styles.rightSection}>
             <div className={styles.rightItem}>검색</div>
 
             {isLoggedIn ? (
                 <>
                   <Link href="/community" className={`${styles.rightItem} ${styles.navLink}`}>
-                      커뮤니티
+                    커뮤니티
                   </Link>
+
+                  {/* 친구 모달 버튼 */}
+                  <div
+                      className={styles.rightItem}
+                      style={{cursor: 'pointer'}}
+                      onClick={() => setShowFriendModal(true)}
+                  >
+                    친구
+                    {showFriendModal && currentUserSignId && (
+                        <FriendActionModal
+                            currentUserSignId={currentUserSignId}
+                            isOpen={showFriendModal}
+                            // 💡 수정됨: 인자가 없는 함수를 전달합니다.
+                            onClose={() => setShowFriendModal(false)}
+                        />
+                    )}
+                  </div>
+
                   <div className={styles.rightItem}>알림</div>
-                  <div className={styles.rightItem}>채팅</div>
-                  <Link href="/write" className={`${styles.rightItem} ${styles.writeButton}`}>
-                      Log 작성
+
+                  {/* 💡 수정됨: 사이드바 열기 -> ChatPage로 이동 */}
+                  <Link href="/page" className={`${styles.rightItem} ${styles.writeButton}`}>
+                    채팅
                   </Link>
+
+                  <Link href="/write" className={`${styles.rightItem} ${styles.writeButton}`}>
+                    Log 작성
+                  </Link>
+
                   <div className={styles.rightItem} onClick={handleLogout}
                        style={{cursor: 'pointer'}}>
                     로그아웃
@@ -64,6 +95,7 @@ export default function Topbar() {
                 <div
                     className={styles.rightItem}
                     style={{cursor: "pointer"}}
+                    // 💡 수정됨: false -> true (열기 동작)
                     onClick={() => setShowLoginModal(true)}
                 >
                   로그인
@@ -72,7 +104,6 @@ export default function Topbar() {
           </nav>
         </header>
 
-        {/* 모달 렌더링 (showLoginModal이 true일 때만) */}
         {showLoginModal && (
             <LoginModal
                 onClose={() => setShowLoginModal(false)}

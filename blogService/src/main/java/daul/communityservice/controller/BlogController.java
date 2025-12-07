@@ -183,20 +183,17 @@ public class BlogController {
     return ResponseEntity.ok(dtoPage);
   }
 
-/* \\ // 💡 5. 피드 게시글 목록 조회 (GET)
-  @GetMapping("/feed")
+  @PostMapping("/feed")
   public ResponseEntity<Page<PostResDTO>> getFeedPosts(
-      @RequestHeader("X-User-Sign-Id") String currentUserId,
+      @RequestHeader("userSignId") String currentUserId,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
-
     Pageable pageable = PageRequest.of(page, size);
-    Page<PostEntity> postPage = postService.getRecentPosts(currentUserId, pageable);
-
+    Page<PostEntity> postPage = postService.getFeedPosts(currentUserId, pageable);
     Page<PostResDTO> dtoPage = postPage.map(this::convertToResponseDTO);
-
     return ResponseEntity.ok(dtoPage);
-  }*/
+
+  }
 
   // 💡 6. 게시글 삭제 (DELETE)
   @DeleteMapping("/{postId}")

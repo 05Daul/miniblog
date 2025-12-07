@@ -48,11 +48,15 @@ spring:
           predicates:
             - Path=/blog/**
 
-
         - id: userService
           uri: http://127.0.0.1:1003
           predicates:
             - Path=/user/**
+
+        - id: userService
+          uri: http://127.0.0.1:1003
+          predicates:
+            - Path=/friends/**
 
         - id: communityService
           uri: http://127.0.0.1:1006

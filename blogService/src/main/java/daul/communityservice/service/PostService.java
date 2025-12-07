@@ -50,9 +50,7 @@ public interface PostService {
 
   /// 트랜딩
   Page<PostEntity> getTrendingPosts(Pageable pageable);
-/*
   Page<PostEntity> getFeedPosts(String currentUserId, Pageable pageable);
-*/
 
   String uploadImage(MultipartFile file) throws IOException;
 }

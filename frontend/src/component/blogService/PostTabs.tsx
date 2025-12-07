@@ -2,8 +2,8 @@
 import React from 'react';
 
 interface PostTabsProps {
-  activeTab: 'trending' | 'recent';
-  setActiveTab: (tab: 'trending' | 'recent') => void;
+  activeTab: 'trending' | 'recent'|'friends';
+  setActiveTab: (tab: 'trending' | 'recent'|'friends') => void;
 }
 
 const tabStyle = (isActive: boolean) => ({
@@ -28,6 +28,10 @@ export default function PostTabs({ activeTab, setActiveTab }: PostTabsProps) {
         {/* 최신 탭 */}
         <h2 style={tabStyle(activeTab === 'recent')} onClick={() => setActiveTab('recent')}>
           최신
+        </h2>
+        {/* 최신 탭 */}
+        <h2 style={tabStyle(activeTab === 'friends')} onClick={() => setActiveTab('friends')}>
+          친구
         </h2>
       </div>
   );

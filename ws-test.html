@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>WebSocket STOMP 테스트</title>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+<body>
+<h2>WebSocket STOMP 테스트</h2>
+<button onclick="connect()">연결하기</button>
+<button onclick="sendMessage()">메시지 보내기</button>
+
+<script>
+  let stompClient;
+
+  function connect() {
+    const socket = new SockJS("http://localhost:1005/ws-chat");
+    stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, () => {
+      console.log("✔ STOMP 연결 성공");
+
+      stompClient.subscribe("/topic/chat.1", (msg) => {
+        console.log("📩 메시지 수신:", msg.body);
+      });
+    });
+  }
+
+  function sendMessage() {
+    const message = {
+      roomId: "chat.1",
+      userSignId: "userA",
+      messageContent: "안녕하세요, 테스트 메시지입니다.",
+      messageType: "TALK"
+    };
+
+    stompClient.send("/app/send", {}, JSON.stringify(message));
+
+    console.log("📤 메시지 전송 완료");
+  }
+</script>
+</body>
+</html>

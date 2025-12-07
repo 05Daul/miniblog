@@ -1,7 +1,6 @@
 package daul.userservice.service;
 
 import daul.userservice.auth.service.AuthService;
-import daul.userservice.dao.FriendsDao;
 import daul.userservice.dao.UserDao;
 import daul.userservice.dto.FriendReqDto;
 import daul.userservice.dto.FriendsResDto;
@@ -29,7 +28,6 @@ public class UserServiceImpl implements UserService {
   private final PasswordEncoder bCryptPasswordEncoder;
   private final AuthenticationManager authenticationManager;
   private final AuthService authService;
-  private final FriendsDao friendDao;
 
   @Override
   public boolean existsByEmail(String email) {
@@ -108,78 +106,7 @@ public class UserServiceImpl implements UserService {
     );
   }
 
-  @Override
-  @Transactional
-  public FriendsResDto requestFriend(String requesterSignId, FriendReqDto reqdto) {
 
-    // 1. 사용자 엔티티 조회 및 null 체크 (Optional을 반환하지 않으므로 직접 null 체크)
-    UsersEntity req = userDao.findByUserSignId(requesterSignId);
-    if (req == null) {
-      throw new IllegalArgumentException("요청 사용자(Requester)를 찾을 수 없습니다.");
-    }
-
-    UsersEntity res = userDao.findByUserSignId(reqdto.getReceiverSignId());
-    if (res == null) {
-      throw new IllegalArgumentException("대상 사용자(Receiver)를 찾을 수 없습니다.");
-    }
-
-    // 2. 비즈니스 규칙 검증
-    if (req.equals(res)) {
-      throw new IllegalStateException("자기 자신에게 친구 요청을 보낼 수 없습니다.");
-    }
-
-    friendDao.findExistingFriendship(req, res)
-        .ifPresent(existingFriendship -> {
-          if (existingFriendship.getFriendsStatus() == FriendsStatus.ACCEPTED) {
-            throw new IllegalStateException("이미 친구 관계입니다.");
-          }
-          if (existingFriendship.getFriendsStatus() == FriendsStatus.PENDING) {
-            throw new IllegalStateException("이미 친구 요청이 대기 중입니다.");
-          }
-        });
-
-    // 3. FriendsEntity 생성 (초기 상태: PENDING)
-    FriendsEntity newRequest = new FriendsEntity(
-        null,
-        req,
-        res,
-        FriendsStatus.PENDING,
-        null,
-        null
-    );
-
-    // 4. 저장
-    FriendsEntity savedEntity = friendDao.saveFriendRequest(newRequest);
-
-    // 5. 결과 반환
-    return new FriendsResDto(savedEntity);
-  }
-
-
-  @Override
-  public FriendsResDto acceptFriend(String receiverSignId, String requesterSignId) {
-    // 1. 사용자 엔티티 조회
-    UsersEntity receiver = findUser(receiverSignId, "수락");
-    UsersEntity requester = findUser(requesterSignId, "요청");
-
-    // 2. 대기 중인 친구 요청을 조회 (요청자 -> 수신자 관계만 확인)
-    FriendsEntity friendsEntity = friendDao.findPendingFriendship(requester, receiver)
-        .orElseThrow(() -> new IllegalArgumentException("해당 요청자로부터 대기 중인 친구 요청을 찾을 수 없습니다."));
-
-    // 3. 상태 확인 (PENDING 상태가 아니면 오류)
-    if (friendsEntity.getFriendsStatus() != FriendsStatus.PENDING) {
-      throw new IllegalStateException(
-          "친구 요청이 PENDING 상태가 아닙니다. 현재 상태: " + friendsEntity.getFriendsStatus());
-    }
-
-    // 4. 상태를 ACCEPTED로 변경하고 저장 (***FriendsEntity에 setFriendsStatus 필요***)
-    friendsEntity.setFriendsStatus(FriendsStatus.ACCEPTED);
-    FriendsEntity acceptedEntity = friendDao.saveFriendRequest(friendsEntity);
-
-    // 5. 결과 반환
-    return new FriendsResDto(acceptedEntity);
-
-  }
 
   private void DuplicateEmail(UsersDTO usersDTO) {
     if (userDao.findByEmail(usersDTO.getEmail()) != null) {

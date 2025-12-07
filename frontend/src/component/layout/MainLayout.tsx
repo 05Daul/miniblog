@@ -1,15 +1,18 @@
 import React from 'react';
-import Topbar from './Bar/Topbar'; // Topbar 컴포넌트 경로에 맞게 수정
+import Topbar from './Bar/Topbar';
+import styles from '@/styles/layout/MainLayout.module.css';
+
 interface LayoutProps {
   children: React.ReactNode;
 }
+
 export default function Layout({ children }: LayoutProps) {
   return (
-      <>
+      <div className={styles.layoutContainer}>
         <Topbar />
-        <main>
+        <main className={styles.mainContent}>
           {children}
         </main>
-      </>
+      </div>
   );
 }
