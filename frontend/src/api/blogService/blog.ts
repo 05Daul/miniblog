@@ -27,11 +27,11 @@ export async function uploadImage(file: File): Promise<{ url: string }> {
   const url = `${BLOGSERVICE_API}/upload`;
 
   const formData = new FormData();
-  formData.append("file", file); // 백엔드 @RequestParam("file")과 이름 일치
+  formData.append("file", file);
 
   const response = await fetch(url, {
     method: "POST",
-    body: formData, // 파일 업로드 시 Content-Type은 설정하지 않습니다 (브라우저가 자동으로 multipart/form-data 설정)
+    body: formData,
   });
 
   if (response.ok) {
@@ -186,6 +186,31 @@ export async function getRecentPosts(page: number = 0, size: number = 10): Promi
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+    }
+  });
+
+  if (response.ok) {
+    return await response.json();
+  } else {
+    const errorText = await response.text();
+    throw new Error(errorText || `게시물 조회 실패: HTTP ${response.status}`);
+  }
+}
+export async function getFriendsPosts(userSignId: string, page: number = 0, size: number = 10): Promise<PaginatedResponse<PostEntity>> {
+  const url = `${BLOGSERVICE_API}/feed?page=${page}&size=${size}`;
+
+  const token = localStorage.getItem('accessToken')
+  console.log("--- Friends Posts API Call Debug ---");
+  console.log(`User Sign ID: ${userSignId}`);
+  console.log(`Token Key Check: 'accessToken'`);
+  console.log("------------------------------------");
+  const response = await fetch(url, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "userSignId": userSignId,
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,  // 이 한 줄 추가! localStorage 토큰 사용
     }
   });
 

@@ -11,6 +11,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -19,6 +20,7 @@ public class SecurityConfig {
 
 
   /// 시큐리티 사용을 위한 Config 패키지
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
 
   @Bean
@@ -41,6 +43,9 @@ public class SecurityConfig {
             //3 .authenticated()로 인증 정보 설정
             .anyRequest().authenticated()
         );
+    http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+
     return http.build();
   }
 

@@ -21,7 +21,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 
 @Entity
-@Table(name = "frineds_Entity")
+@Table(name = "friends_Entity")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,16 +32,20 @@ public class FriendsEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long friendId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
+  @ManyToOne
+  @JoinColumn(name = "user_id",
+      referencedColumnName = "userSignId",
+      nullable = false)
   private UsersEntity requester;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "req_friend_id", nullable = false)
+  @ManyToOne
+  @JoinColumn(name = "req_friend_id",
+      referencedColumnName = "userSignId",
+      nullable = false)
   private UsersEntity receiver;
 
   @Enumerated(EnumType.STRING)
-  @Column(nullable = true)
+  @Column(nullable = false)
   private FriendsStatus friendsStatus;
 
   @Column(nullable = false)

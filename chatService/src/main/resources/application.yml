@@ -1,13 +1,13 @@
 spring:
   application:
-    name:
-      'chatService'
+    name: chatService
 
   datasource:
     url: jdbc:postgresql://localhost:5432/miniblog
     username: daul
     password: 2364
     driver-class-name: org.postgresql.Driver
+
   jpa:
     show-sql: true
     database: postgresql
@@ -19,15 +19,29 @@ spring:
       uri: "mongodb://localhost:27017/miniblog_chat_db"
       database: chat_db
 
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    consumer:
+      group-id: chat-service-group
+      auto-offset-reset: earliest
+
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: daul.chatservice.dto.ChatMessageDto
+        spring.json.use.type.headers: false
+        spring.json.add.type.headers: false
+        spring.json.fail.on.empty: false
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+      properties:
+        spring.json.add-type-headers: false
+        spring.json.use.type.headers: false
 server:
   port: 1005
-  servlet:
-    context-path: /chat
-    encoding:
-      charset: UTF-8
-      enabled: true
-      force: true
-  tomcat:
-    uri-encoding: UTF-8
-
-

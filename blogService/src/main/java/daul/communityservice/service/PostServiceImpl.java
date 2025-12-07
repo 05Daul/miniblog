@@ -1,11 +1,13 @@
 package daul.communityservice.service;
 
 import daul.communityservice.dto.CommentDTO;
+import daul.communityservice.feignClient.FriendsFeignClient;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +27,8 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -35,9 +39,10 @@ public class PostServiceImpl implements PostService {
   private final PostTagDao postTagDao;
   private final PostDao postDao;
   private final TagDao tagDao;
+  private final FriendsFeignClient friendsFeignClient;
 
   @Value("${file.upload-dir}")
-  private  String uploadDir;
+  private String uploadDir;
   @Value("${file.base-url}")
   private String baseUrl;
 
@@ -57,7 +62,8 @@ public class PostServiceImpl implements PostService {
 
   @Override
   @Transactional
-  public PostEntity updatePost(String authenticatedUserSignId,Long postId, PostCreationRequestDTO postCreationRequestDTO) {
+  public PostEntity updatePost(String authenticatedUserSignId, Long postId,
+      PostCreationRequestDTO postCreationRequestDTO) {
     PostEntity post = postDao.findById(postId)
         .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id=" + postId));
 
@@ -186,18 +192,30 @@ public class PostServiceImpl implements PostService {
   }
 
 
-  /* @Transactional(readOnly = true)
-   @Override
-   public Page<PostEntity> getFeedPosts(String currentUserId, Pageable pageable) {
-    *//* List<String> followedAuthorIds = followService.getFollowedUserIds(currentUserId);
+  @Transactional(readOnly = true)
+  @Override
+  public Page<PostEntity> getFeedPosts(String currentUserId, Pageable pageable) {
+    ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+    String authorizationHeader = null;
 
-    if (followedAuthorIds.isEmpty()) {
-      return Page.empty(pageable);
-   *//* }
+    if (attributes != null) {
+      // 🚨 이 코드가 현재 HTTP 요청의 Authorization: Bearer <token> 전체를 가져옵니다.
+      authorizationHeader = attributes.getRequest().getHeader("Authorization");
+    }
 
-    return postDao.findFeedPostsByAuthorIds(followedAuthorIds, pageable);
+    if (authorizationHeader == null) {
+      // 토큰이 없으면 친구 목록을 가져올 수 없으므로, 빈 목록을 반환
+      return postDao.findFeedPostsByAuthorIds(new ArrayList<>(), pageable);
+    }
+
+    // 🚨 수정된 FriendsFeignClient에 Authorization 헤더를 인자로 전달
+    List<String> friendIds = friendsFeignClient.getMSAFriendSignIds(authorizationHeader);
+    if (friendIds == null) {
+      friendIds = new ArrayList<>();
+    }
+    return postDao.findFeedPostsByAuthorIds(friendIds, pageable);
   }
-*/
+
   @Transactional(readOnly = true)
   @Override
   public Page<PostEntity> getRecentPosts(Pageable pageable) {
@@ -208,7 +226,7 @@ public class PostServiceImpl implements PostService {
   @Override
   public Page<PostEntity> getTrendingPosts(Pageable pageable) {
     LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
-    return postDao.findTrendingPosts(sevenDaysAgo,pageable);
+    return postDao.findTrendingPosts(sevenDaysAgo, pageable);
   }
 
 
@@ -244,6 +262,7 @@ public class PostServiceImpl implements PostService {
     // 4. URL 반환
     return cleanBaseUrl + "/" + fileName;
   }
+
   private CommentDTO convertToDTOWithChildren(CommentEntity entity) {
     List<CommentDTO> children = entity.getChildComments().stream()
         .map(this::convertToDTO)

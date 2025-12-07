@@ -7,7 +7,7 @@ import PostTabs from "../component/blogService/PostTabs";
 
 
 function MiniBlogContent() {
-  const [activeTab, setActiveTab] = useState<'trending' | 'recent'>('trending');
+  const [activeTab, setActiveTab] = useState<'trending' | 'recent'| 'friends'>('trending');
 
   return (
       <main>

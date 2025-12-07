@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<Config
         }
 
         String role = jwtUtil.extractRole(token);
-
+//토큰에 추출한 아이디를 헤더에 추가
         ServerHttpRequest modified = request.mutate()
             .header("userSignId", userSignId)
             .header("role", role)
