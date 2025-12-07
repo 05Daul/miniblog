@@ -2,7 +2,7 @@
 
 .mainContent img {
   /* Tiptap이 설정한 인라인 스타일(width: Npx)이 적용되도록 환경 설정 */
-  max-width: 100%;
+  max-width: 88%;
   height: auto;
   display: block; /* 이미지 정렬과 간격 처리를 위해 블록 요소로 */
   margin: 1rem auto; /* 상하 간격 추가 및 중앙 정렬 */
@@ -11,7 +11,8 @@
 }
 
 .detailContainer {
-  max-width: 1400px;
+  min-width: 88%;
+
   margin: 0 auto;
   padding: 3rem 2rem;
   background-color: #ffffff;

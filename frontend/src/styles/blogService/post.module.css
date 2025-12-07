@@ -1,5 +1,13 @@
 /* post.module.css - Brunch + Velog 벤치마킹 */
+
+/* ✅ ⭐️ 최상위 컨테이너 높이 확보 및 레이아웃 설정 (핵심 수정) ⭐️ */
+.mainContentWrapper {
+  display: flex; /* 자식 요소들을 flex로 배치 */
+  flex-direction: column; /* 수직으로 배치 */
+}
+
 .postListContainer {
+  flex-grow: 1; /* ✅ 남은 공간을 모두 차지하도록 하여 로더를 하단으로 밀어냄 */
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 벨로그 그리드 */
   gap: 24px;
@@ -25,6 +33,7 @@
   transition: all 0.3s ease; /* 벨로그 호버 */
   display: flex;
   flex-direction: column;
+  width: 300px;
 }
 .noThumbnailPlaceholder {
   width: 100%;
@@ -93,6 +102,8 @@
 
 .content {
   padding: 20px;
+  height: 140px;
+  flex-grow: 1;
 }
 
 .title {
